@@ -31,11 +31,20 @@ export const TEAM_STRENGTH: Record<string, number> = {
   // Other WC 2026 teams (undrafted — needed for full bracket simulation)
   POL: 57, TUR: 59, AUT: 60, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
   SRB: 58, ALB: 48, SVN: 52, GRE: 50, CZE: 57, SCO: 55,
-  KOR: 56, AUS: 52, IRN: 48, SAU: 47, QAT: 40, IDN: 38,
+  KOR: 56, AUS: 52, IRN: 48,
+  // Saudi Arabia: ESPN uses KSA (not SAU) — keep both so either abbreviation works
+  SAU: 47, KSA: 47,
+  QAT: 40, IDN: 38,
+  // Africa
   EGY: 51, NGA: 52, CMR: 49, GHA: 48, MLI: 46,
   RSA: 42, ANG: 40, TAN: 36, CIV: 56,
+  ALG: 50, // Algeria — ESPN abbreviation ALG
+  TUN: 47, // Tunisia — ESPN abbreviation TUN
+  // CONCACAF
   CAN: 53, HON: 39, JAM: 41, PAN: 43, SLV: 38, HAI: 35, CUW: 32,
+  // CONMEBOL (undrafted)
   VEN: 48, CHI: 50, BOL: 40, PAR: 47, PER: 49,
+  // OFC / other
   NZL: 40, BIH: 44,
 };
 
