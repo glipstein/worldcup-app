@@ -13,7 +13,7 @@ type Tab = 'overview' | 'roster' | 'simulate';
 
 const TABS: { id: Tab; label: string; emoji: string }[] = [
   { id: 'overview',  label: 'Overview',  emoji: '📊' },
-  { id: 'roster',    label: 'Roster & Map', emoji: '👥' },
+  { id: 'roster',    label: 'Roster',    emoji: '👥' },
   { id: 'simulate',  label: 'Simulate',  emoji: '🎲' },
 ];
 

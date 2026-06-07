@@ -78,19 +78,65 @@ export default function SimulatePanel({ matches }: Props) {
         )}
       </div>
 
-      {/* Single sim → full points table */}
-      {result?.mode === 'single' && result.drafterTotals && (
-        <div className="space-y-2">
-          <PointsTable
-            drafters={result.drafterTotals}
-            label="SIMULATED"
-            labelColor="#a78bfa"
-          />
-          <p className="text-xs text-slate-600 px-1">
-            One random outcome weighted by team strengths. Click again for a different draw.
-          </p>
-        </div>
-      )}
+      {/* Single sim → winner cards + full points table */}
+      {result?.mode === 'single' && result.drafterTotals && (() => {
+        const ranked = [...result.drafterTotals].sort((a, b) => b.total - a.total);
+        const winner = ranked[0];
+        return (
+          <div className="space-y-4">
+            {/* Winner banner */}
+            <div
+              className="rounded-xl px-4 py-3 flex items-center gap-3"
+              style={{ background: `${winner.color}18`, border: `1px solid ${winner.color}44` }}
+            >
+              <span className="text-2xl">🏆</span>
+              <div>
+                <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
+                  Simulated winner
+                </div>
+                <div className="text-xl font-black" style={{ color: winner.color }}>
+                  {winner.name}
+                  <span className="text-sm font-normal text-slate-400 ml-2">
+                    {winner.total} pts
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Ranking cards */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {ranked.map((d, i) => (
+                <div
+                  key={d.id}
+                  className="bg-slate-900 rounded-xl p-3 flex flex-col gap-1"
+                  style={{ borderTop: `3px solid ${d.color}` }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-slate-500 text-xs font-semibold w-4">
+                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
+                    </span>
+                    <span className="text-white font-bold text-sm truncate">{d.name}</span>
+                  </div>
+                  <div className="text-xl font-black tabular-nums" style={{ color: d.color }}>
+                    {d.total}
+                    <span className="text-xs font-normal text-slate-500 ml-1">pts</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Full breakdown table */}
+            <PointsTable
+              drafters={result.drafterTotals}
+              label="SIMULATED"
+              labelColor="#a78bfa"
+            />
+            <p className="text-xs text-slate-600 px-1">
+              One random outcome weighted by team strengths. Click again for a different draw.
+            </p>
+          </div>
+        );
+      })()}
 
       {/* Monte Carlo → win probabilities */}
       {result?.mode === 'montecarlo' && result.winProbabilities && (
