@@ -13,7 +13,7 @@ export const ESPN_TO_ISO2: Record<string, string> = {
   POR: 'pt', SEN: 'sn', SUI: 'ch', URU: 'uy', USA: 'us',
 
   // Other WC 2026 teams
-  ALB: 'al', ANG: 'ao', AUS: 'au', AUT: 'at', BIH: 'ba',
+  ALB: 'al', ALG: 'dz', ANG: 'ao', AUS: 'au', AUT: 'at', BIH: 'ba',
   BOL: 'bo', CMR: 'cm', CAN: 'ca', CHI: 'cl', CIV: 'ci',
   COD: 'cd', CPV: 'cv', CRC: 'cr', CUB: 'cu', CUW: 'cw',
   CZE: 'cz', DEN: 'dk', DOM: 'do', EGY: 'eg', GHA: 'gh',
@@ -23,6 +23,7 @@ export const ESPN_TO_ISO2: Record<string, string> = {
   KOR: 'kr', KUW: 'kw', MLI: 'ml', MLT: 'mt', MNG: 'mn',
   MOZ: 'mz', NGA: 'ng', NZL: 'nz', OMA: 'om', PAN: 'pa',
   PAR: 'py', PER: 'pe', PHI: 'ph', POL: 'pl', QAT: 'qa',
+  KSA: 'sa',
   ROU: 'ro', RSA: 'za', SAU: 'sa', SCO: 'gb-sct', SLV: 'sv',
   SRB: 'rs', SUR: 'sr', SVK: 'sk', SVN: 'si', SWE: 'se',
   SYR: 'sy', TAN: 'tz', THA: 'th', TRI: 'tt', TUN: 'tn',
