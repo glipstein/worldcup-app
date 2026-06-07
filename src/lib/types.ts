@@ -46,17 +46,10 @@ export interface DrafterTotals {
   teams: TeamRow[];
 }
 
-export interface SimDrafterResult {
-  id: string;
-  name: string;
-  color: string;
-  total: number;
-}
-
 export interface SimResult {
   mode: 'single' | 'montecarlo';
-  /** Single-sim: simulated points per drafter */
-  drafterPoints?: SimDrafterResult[];
-  /** MC: win probability 0-1 per drafter id */
+  /** Single-sim: full per-team breakdown (feeds directly into PointsTable) */
+  drafterTotals?: DrafterTotals[];
+  /** MC: win probability 0–1 per drafter id */
   winProbabilities?: Record<string, number>;
 }

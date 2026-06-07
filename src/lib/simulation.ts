@@ -1,6 +1,7 @@
-import type { Match, Stage, SimDrafterResult } from './types';
+import type { Match, Stage, DrafterTotals } from './types';
 import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
 import { getStrength } from './teamStrength';
+import { calculateDrafterTotals } from './scoring';
 
 // ─── Probability model ────────────────────────────────────────────────────────
 
@@ -15,24 +16,21 @@ function simulateOutcome(
 ): 'home' | 'away' | 'draw' {
   const s1 = getStrength(homeAbbr);
   const s2 = getStrength(awayAbbr);
-  const pHome = s1 / (s1 + s2); // raw win probability for home side
+  const pHome = s1 / (s1 + s2);
   const r = Math.random();
 
   if (stage !== 'GROUP') {
-    // Knockout: no draws possible
     return r < pHome ? 'home' : 'away';
   }
 
-  // Group stage: ~25% base draw rate, modulated by strength gap
   const drawRate = 0.25;
   const pHomeWin = pHome * (1 - drawRate);
-  const pDraw = drawRate;
   if (r < pHomeWin) return 'home';
-  if (r < pHomeWin + pDraw) return 'draw';
+  if (r < pHomeWin + drawRate) return 'draw';
   return 'away';
 }
 
-// ─── Points lookup (mirrors scoring.ts to keep simulation self-contained) ─────
+// ─── Fast points-only path (used by Monte Carlo) ──────────────────────────────
 
 const STAGE_PTS: Record<Stage, { win: number; draw: number; loss: number }> = {
   GROUP:         { win: 1,   draw: 0.5, loss: 0 },
@@ -44,7 +42,7 @@ const STAGE_PTS: Record<Stage, { win: number; draw: number; loss: number }> = {
   FINAL:         { win: 6,   draw: 0,   loss: 0 },
 };
 
-function matchPts(
+function fastMatchPts(
   abbr: string,
   homeAbbr: string,
   outcome: 'home' | 'away' | 'draw',
@@ -59,32 +57,26 @@ function matchPts(
   return STAGE_PTS[stage][result];
 }
 
-// ─── One full simulation run ──────────────────────────────────────────────────
-
-function runOnce(
+function runOnceFast(
   finishedMatches: Match[],
   pendingMatches: Match[]
 ): Record<string, number> {
   const points: Record<string, number> = {};
   DRAFT_CONFIG.forEach(d => { points[d.id] = 0; });
 
-  // Accumulate already-played match points
   for (const m of finishedMatches) {
     if (!m.winner) continue;
     for (const abbr of [m.homeAbbr, m.awayAbbr]) {
-      const drafterId = DRAFTER_BY_ABBR.get(abbr);
-      if (!drafterId) continue;
-      points[drafterId] += matchPts(abbr, m.homeAbbr, m.winner, m.stage);
+      const id = DRAFTER_BY_ABBR.get(abbr);
+      if (id) points[id] += fastMatchPts(abbr, m.homeAbbr, m.winner, m.stage);
     }
   }
 
-  // Simulate remaining matches
   for (const m of pendingMatches) {
     const outcome = simulateOutcome(m.homeAbbr, m.awayAbbr, m.stage);
     for (const abbr of [m.homeAbbr, m.awayAbbr]) {
-      const drafterId = DRAFTER_BY_ABBR.get(abbr);
-      if (!drafterId) continue;
-      points[drafterId] += matchPts(abbr, m.homeAbbr, outcome, m.stage);
+      const id = DRAFTER_BY_ABBR.get(abbr);
+      if (id) points[id] += fastMatchPts(abbr, m.homeAbbr, outcome, m.stage);
     }
   }
 
@@ -93,16 +85,33 @@ function runOnce(
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export function runSingleSim(allMatches: Match[]): SimDrafterResult[] {
+/**
+ * Simulate a single completion of the remaining tournament.
+ * Returns full DrafterTotals (per-team match breakdown) so PointsTable can render it.
+ */
+export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
   const finished = allMatches.filter(m => m.status === 'finished');
   const pending  = allMatches.filter(m => m.status !== 'finished');
-  const points   = runOnce(finished, pending);
 
-  return DRAFT_CONFIG
-    .map(d => ({ id: d.id, name: d.name, color: d.color, total: points[d.id] ?? 0 }))
-    .sort((a, b) => b.total - a.total);
+  // Turn each pending match into a "finished" match with a simulated outcome
+  const simulated: Match[] = pending.map(m => {
+    const outcome = simulateOutcome(m.homeAbbr, m.awayAbbr, m.stage);
+    return {
+      ...m,
+      status: 'finished' as const,
+      winner: outcome,
+      homeScore: outcome === 'home' ? 1 : 0,
+      awayScore: outcome === 'away' ? 1 : 0,
+    };
+  });
+
+  return calculateDrafterTotals([...finished, ...simulated]);
 }
 
+/**
+ * Run numSims simulations and return each drafter's win probability (0–1).
+ * Uses a fast points-only path to keep 50 000 runs snappy.
+ */
 export function runMonteCarlo(
   allMatches: Match[],
   numSims = 50_000
@@ -114,10 +123,11 @@ export function runMonteCarlo(
   DRAFT_CONFIG.forEach(d => { wins[d.id] = 0; });
 
   for (let i = 0; i < numSims; i++) {
-    const pts = runOnce(finished, pending);
+    const pts = runOnceFast(finished, pending);
     const max = Math.max(...Object.values(pts));
-    const leaders = Object.entries(pts).filter(([, v]) => v === max).map(([k]) => k);
-    // Split the win share equally on ties
+    const leaders = Object.entries(pts)
+      .filter(([, v]) => v === max)
+      .map(([k]) => k);
     for (const id of leaders) wins[id] += 1 / leaders.length;
   }
 
