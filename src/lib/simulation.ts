@@ -1,6 +1,6 @@
 import type { Match, Stage, DrafterTotals } from './types';
 import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
-import { getStrength } from './teamStrength';
+import { getStrength, TEAM_STRENGTH } from './teamStrength';
 import { calculateDrafterTotals } from './scoring';
 
 // ─── Probability model ────────────────────────────────────────────────────────
@@ -234,9 +234,13 @@ export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
   const finished = allMatches.filter(m => m.status === 'finished');
   const pending  = allMatches.filter(m => m.status !== 'finished');
 
-  // Detect whether ESPN has already scheduled knockout matches with real teams
+  // Detect whether ESPN has knockout matches with real (known) teams.
+  // ESPN pre-schedules the full bracket with placeholder abbreviations (e.g. "TBD")
+  // before teams are determined — those must not trigger this flag.
   const hasEspnKnockout = allMatches.some(
-    m => m.stage !== 'GROUP' && m.stage !== 'THIRD_PLACE' && m.homeAbbr && m.awayAbbr
+    m => m.stage !== 'GROUP' && m.stage !== 'THIRD_PLACE'
+      && (m.homeAbbr in TEAM_STRENGTH)
+      && (m.awayAbbr in TEAM_STRENGTH)
   );
 
   if (!hasEspnKnockout && groups.length > 0) {
