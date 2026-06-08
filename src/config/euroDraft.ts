@@ -1,17 +1,17 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // EURO 2024 FICTIONAL DRAFT CONFIG — used by the Debug page only.
 //
-// 24 Euro 2024 teams assigned to the same four drafters (Pederson, Barber,
+// 24 Euro 2024 teams assigned to the same four drafters (Pedersen, Barber,
 // Lipstein, Martin) via a snake draft ordered by expected finishing position.
 // This is entirely fictional — it just provides realistic test data.
 //
 // Snake draft order (4 drafters × 6 rounds):
-//   R1 (1→4): Pederson=ESP, Barber=ENG, Lipstein=FRA, Martin=GER
-//   R2 (4→1): Martin=NED, Lipstein=POR, Barber=SUI, Pederson=TUR
-//   R3 (1→4): Pederson=ITA, Barber=BEL, Lipstein=AUT, Martin=ROU
-//   R4 (4→1): Martin=GEO, Lipstein=SVK, Barber=UKR, Pederson=CRO
-//   R5 (1→4): Pederson=CZE, Barber=DEN, Lipstein=SRB, Martin=POL
-//   R6 (4→1): Martin=HUN, Lipstein=ALB, Barber=SCO, Pederson=SVN
+//   R1 (1→4): Pedersen=ESP, Barber=ENG, Lipstein=FRA, Martin=GER
+//   R2 (4→1): Martin=NED, Lipstein=POR, Barber=SUI, Pedersen=TUR
+//   R3 (1→4): Pedersen=ITA, Barber=BEL, Lipstein=AUT, Martin=ROU
+//   R4 (4→1): Martin=GEO, Lipstein=SVK, Barber=UKR, Pedersen=CRO
+//   R5 (1→4): Pedersen=CZE, Barber=DEN, Lipstein=SRB, Martin=POL
+//   R6 (4→1): Martin=HUN, Lipstein=ALB, Barber=SCO, Pedersen=SVN
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { DrafterConfig } from './draft';
@@ -19,7 +19,7 @@ import type { DrafterConfig } from './draft';
 export const EURO_DRAFT_CONFIG: DrafterConfig[] = [
   {
     id: 'pederson',
-    name: 'Pederson',
+    name: 'Pedersen',
     color: '#38bdf8',
     teams: [
       { espnAbbr: 'ESP', name: 'Spain',       flag: '🇪🇸', isoNum: '724' },

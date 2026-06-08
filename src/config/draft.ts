@@ -29,7 +29,7 @@ export interface DrafterConfig {
 export const DRAFT_CONFIG: DrafterConfig[] = [
   {
     id: 'pederson',
-    name: 'Pederson',
+    name: 'Pedersen',
     color: '#38bdf8',
     teams: [
       { espnAbbr: 'ESP', name: 'Spain',        flag: '🇪🇸', isoNum: '724' },
