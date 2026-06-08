@@ -1,9 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// DRAFT CONFIG  ← the only file you need to edit as remaining picks are made
+// DRAFT CONFIG — all 48 teams drafted (picks 1–48 complete)
 //
-// Each drafter will ultimately have 12 teams (48 teams ÷ 4 drafters).
-// Currently 43/48 teams picked (picks 1–43). One pick remaining per drafter
-// except Martin who has two remaining.
+// 12 teams per drafter (48 teams ÷ 4 drafters).
 //
 // Fields per team:
 //   espnAbbr  – ESPN 3-letter code used in the API (must match exactly)
@@ -43,7 +41,7 @@ export const DRAFT_CONFIG: DrafterConfig[] = [
       { espnAbbr: 'GHA', name: 'Ghana',        flag: '🇬🇭', isoNum: '288' },
       { espnAbbr: 'RSA', name: 'South Africa', flag: '🇿🇦', isoNum: '710' },
       { espnAbbr: 'CPV', name: 'Cape Verde',   flag: '🇨🇻', isoNum: '132' },
-      // ← add pick 44 here
+      { espnAbbr: 'IRQ', name: 'Iraq',         flag: '🇮🇶', isoNum: '368' },
     ],
   },
   {
@@ -62,7 +60,7 @@ export const DRAFT_CONFIG: DrafterConfig[] = [
       { espnAbbr: 'BIH', name: 'Bosnia & Herzegovina', flag: '🇧🇦', isoNum: '070' },
       { espnAbbr: 'UZB', name: 'Uzbekistan',           flag: '🇺🇿', isoNum: '860' },
       { espnAbbr: 'PAN', name: 'Panama',               flag: '🇵🇦', isoNum: '591' },
-      // ← add pick 45 here
+      { espnAbbr: 'NZL', name: 'New Zealand',          flag: '🇳🇿', isoNum: '554' },
     ],
   },
   {
@@ -81,7 +79,7 @@ export const DRAFT_CONFIG: DrafterConfig[] = [
       { espnAbbr: 'IRN', name: 'Iran',         flag: '🇮🇷', isoNum: '364' },
       { espnAbbr: 'KSA', name: 'Saudi Arabia', flag: '🇸🇦', isoNum: '682' },
       { espnAbbr: 'JOR', name: 'Jordan',       flag: '🇯🇴', isoNum: '400' },
-      // ← add pick 46 here
+      { espnAbbr: 'HAI', name: 'Haiti',        flag: '🇭🇹', isoNum: '332' },
     ],
   },
   {
@@ -99,7 +97,8 @@ export const DRAFT_CONFIG: DrafterConfig[] = [
       { espnAbbr: 'SCO', name: 'Scotland',   flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', isoNum: '826' }, // shares GBR polygon with England on world map
       { espnAbbr: 'TUN', name: 'Tunisia',    flag: '🇹🇳', isoNum: '788' },
       { espnAbbr: 'COD', name: 'DR Congo',   flag: '🇨🇩', isoNum: '180' },
-      // ← add picks 47 & 48 here
+      { espnAbbr: 'CUW', name: 'Curaçao',    flag: '🇨🇼', isoNum: '531' },
+      { espnAbbr: 'QAT', name: 'Qatar',      flag: '🇶🇦', isoNum: '634' },
     ],
   },
 ];

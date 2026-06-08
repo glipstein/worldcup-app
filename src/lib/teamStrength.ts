@@ -28,7 +28,7 @@ export const TEAM_STRENGTH: Record<string, number> = {
   ECU: 50,  // Ecuador
   NOR: 48,  // Norway
 
-  // ── Picks 21–43 ──────────────────────────────────────────────────────────────
+  // ── Picks 21–48 ──────────────────────────────────────────────────────────────
   CIV: 56,  // Ivory Coast
   TUR: 59,  // Turkey
   AUT: 60,  // Austria
@@ -52,6 +52,11 @@ export const TEAM_STRENGTH: Record<string, number> = {
   PAN: 43,  // Panama
   CPV: 43,  // Cape Verde
   JOR: 40,  // Jordan
+  IRQ: 44,  // Iraq
+  NZL: 40,  // New Zealand
+  HAI: 35,  // Haiti
+  CUW: 32,  // Curaçao
+  QAT: 40,  // Qatar
 
   // ── Undrafted — still needed for full bracket simulation ─────────────────────
   SAU: 47,  // Saudi Arabia alias (ESPN sometimes uses SAU)
@@ -60,11 +65,10 @@ export const TEAM_STRENGTH: Record<string, number> = {
   GEO: 48,  // Georgia
   POL: 57, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
   SRB: 58, ALB: 48, SVN: 52, GRE: 50,
-  QAT: 40, IDN: 38,
+  IDN: 38,
   NGA: 52, CMR: 49, MLI: 46, ANG: 40, TAN: 36,
-  HON: 39, JAM: 41, SLV: 38, HAI: 35, CUW: 32,
+  HON: 39, JAM: 41, SLV: 38,
   VEN: 48, CHI: 50, BOL: 40, PER: 49,
-  NZL: 40,
 };
 
 export function getStrength(abbr: string): number {
