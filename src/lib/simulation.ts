@@ -1,27 +1,50 @@
 import type { Match, Stage, DrafterTotals } from './types';
 import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
 import { getStrength, TEAM_STRENGTH } from './teamStrength';
+import { MATCH_ODDS } from './matchOdds';
 import { calculateDrafterTotals } from './scoring';
 
 // ─── Probability model ────────────────────────────────────────────────────────
 
 /**
- * Elo-logistic match outcome simulator.
- * Group stage allows draws; knockout rounds are binary (ET/pens → one winner).
+ * Match outcome simulator — two-tier probability source:
  *
- * Formula: P(home wins) = 1 / (1 + 10^((s2 - s1) / D))
- * D = 50 is calibrated for our 0-100 strength scale. Standard Elo uses D=400
- * on a ~600-point spread; scaling to our 0-100 range gives D ≈ 67, but D=50
- * is slightly more aggressive to keep extreme mismatches realistic
- * (ARG 92 vs HAI 35 → ~93% Argentina; ARG vs PAN 43 → ~91%).
- * The old linear Bradley-Terry formula (s1/(s1+s2)) drastically over-estimated
- * weaker teams' chances (Panama was getting 32% vs Argentina).
+ * Tier 1 — Polymarket market odds (MATCH_ODDS lookup):
+ *   When a market exists for this exact fixture (key = "HOMEABBR_AWAYABBR"),
+ *   we use those probabilities directly.  They are pre-normalized to sum to 1.0
+ *   by scripts/fetch-match-odds.mjs and reflect the full wisdom-of-crowd market.
+ *   For knockout rounds, the draw probability is redistributed proportionally
+ *   between home/away (no draws in knockout — ET/pens resolve to one winner,
+ *   and outright Polymarket knockout markets already bake that in).
+ *
+ * Tier 2 — Elo-logistic fallback (D=50):
+ *   Used when no Polymarket market exists: hypothetical bracket paths during the
+ *   group stage simulation, very early group games not yet on Polymarket, or
+ *   any match whose slug couldn't be resolved.
+ *   Formula: P(home wins) = 1 / (1 + 10^((s2 - s1) / 50))
+ *   Group stage uses a flat 25% draw rate atop the logistic win probability.
  */
 function simulateOutcome(
   homeAbbr: string,
   awayAbbr: string,
   stage: Stage
 ): 'home' | 'away' | 'draw' {
+  // ── Tier 1: Polymarket match-specific odds ────────────────────────────────
+  const mkt = MATCH_ODDS[`${homeAbbr}_${awayAbbr}`];
+  if (mkt) {
+    const r = Math.random();
+    if (stage !== 'GROUP') {
+      // Knockout: no draws — redistribute pDraw proportionally to home/away
+      const pHomeKO = mkt.pHome / (mkt.pHome + mkt.pAway);
+      return r < pHomeKO ? 'home' : 'away';
+    }
+    // Group stage: use 3-way odds directly
+    if (r < mkt.pHome) return 'home';
+    if (r < mkt.pHome + mkt.pDraw) return 'draw';
+    return 'away';
+  }
+
+  // ── Tier 2: Elo-logistic fallback ────────────────────────────────────────
   const s1 = getStrength(homeAbbr);
   const s2 = getStrength(awayAbbr);
   const D = 50;

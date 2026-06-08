@@ -1,15 +1,21 @@
-name: Auto-update team strengths after round completion
+name: Auto-update team strengths and match odds
 
 # Runs every 6 hours year-round (fast-exits outside the tournament window).
-# When the ESPN API shows that all matches in a new stage are finished AND
-# the 18-hour martj42 lag has elapsed, this workflow:
-#   1. Recomputes Elo ratings from the full martj42/international_results CSV
-#   2. Patches src/lib/teamStrength.ts with updated 0-100 strength values
-#   3. Updates .github/elo-update-state.json so the stage isn't re-processed
-#   4. Commits and pushes both files, triggering a GitHub Pages deploy
 #
-# You can also run the original manual workflow at any time:
-#   Actions → "Update team strength ratings" → Run workflow
+# Every run (unconditional):
+#   • Fetches Polymarket match-specific odds for all WC 2026 fixtures
+#     and rewrites src/lib/matchOdds.ts
+#
+# When ESPN shows a new stage just finished AND the 18-hour martj42 lag elapsed:
+#   • Recomputes Elo ratings from martj42/international_results CSV
+#   • Patches src/lib/teamStrength.ts with updated 0-100 strength values
+#   • Updates .github/elo-update-state.json so the stage isn't re-processed
+#
+# Both changes (if any) are committed together and pushed, triggering a
+# GitHub Pages deploy.
+#
+# You can also run manually:
+#   Actions → "Auto-update team strengths and match odds" → Run workflow
 
 on:
   schedule:
@@ -32,9 +38,17 @@ jobs:
       # ── Step 1: poll ESPN and decide whether a new round just finished ────────
       - name: Check whether a new stage has completed
         id: round_check
+        continue-on-error: true   # don't abort the match-odds fetch if ESPN is flaky
         run: node scripts/check-round-complete.mjs
 
-      # ── Steps 2-5 only run when trigger_update == 'true' ─────────────────────
+      # ── Step 2 (ALWAYS): fetch Polymarket match odds ─────────────────────────
+      # Runs regardless of round completion — keeps odds fresh throughout group
+      # stage and auto-adds knockout-round markets as Polymarket publishes them.
+      - name: Fetch Polymarket match odds
+        continue-on-error: true   # odds fetch failure shouldn't block a strength push
+        run: node scripts/fetch-match-odds.mjs
+
+      # ── Steps 3-5 only run when a new round was detected ─────────────────────
 
       - name: Compute Elo ratings and patch teamStrength.ts
         if: steps.round_check.outputs.trigger_update == 'true'
@@ -54,13 +68,33 @@ jobs:
         if: steps.round_check.outputs.trigger_update == 'true'
         run: git diff src/lib/teamStrength.ts
 
+      # ── Step 6 (ALWAYS): commit whatever changed ─────────────────────────────
+      # matchOdds.ts is always staged; teamStrength.ts + state file only when Elo ran.
+      # git diff --staged --quiet exits cleanly when nothing changed (no empty commit).
       - name: Commit and push
-        if: steps.round_check.outputs.trigger_update == 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/lib/teamStrength.ts .github/elo-update-state.json
+
+          # Always stage odds file
+          git add src/lib/matchOdds.ts
+
+          # Stage strength files only when Elo update ran
+          TRIGGER="${{ steps.round_check.outputs.trigger_update }}"
+          if [[ "$TRIGGER" == "true" ]]; then
+            git add src/lib/teamStrength.ts .github/elo-update-state.json
+          fi
+
+          # Nothing changed → nothing to commit
           git diff --staged --quiet && echo "No changes to commit." && exit 0
-          STAGE="${{ steps.round_check.outputs.completed_stage }}"
-          git commit -m "chore: auto-update strengths after ${STAGE} ($(date -u +%Y-%m-%d))"
+
+          # Build a descriptive commit message
+          if [[ "$TRIGGER" == "true" ]]; then
+            STAGE="${{ steps.round_check.outputs.completed_stage }}"
+            MSG="chore: update odds + strengths after ${STAGE} ($(date -u +%Y-%m-%d))"
+          else
+            MSG="chore: update match odds ($(date -u +%Y-%m-%d))"
+          fi
+
+          git commit -m "$MSG"
           git push
