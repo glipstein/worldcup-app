@@ -6,8 +6,14 @@ import { calculateDrafterTotals } from './scoring';
 // ─── Probability model ────────────────────────────────────────────────────────
 
 /**
- * Bradley-Terry match outcome simulator.
+ * Elo-logistic match outcome simulator.
  * Group stage allows draws; knockout rounds are binary (ET/pens → one winner).
+ *
+ * Formula: P(home wins) = 1 / (1 + 10^((s2 - s1) / D))
+ * D = 35 is calibrated for our 0-100 strength scale and produces realistic
+ * tail probabilities — e.g. ARG (92) vs PAN (43) → ~96% Argentina, not 68%.
+ * The old linear Bradley-Terry formula (s1/(s1+s2)) drastically over-estimated
+ * weaker teams' chances.
  */
 function simulateOutcome(
   homeAbbr: string,
@@ -16,7 +22,8 @@ function simulateOutcome(
 ): 'home' | 'away' | 'draw' {
   const s1 = getStrength(homeAbbr);
   const s2 = getStrength(awayAbbr);
-  const pHome = s1 / (s1 + s2);
+  const D = 35;
+  const pHome = 1 / (1 + Math.pow(10, (s2 - s1) / D));
   const r = Math.random();
 
   if (stage !== 'GROUP') {
