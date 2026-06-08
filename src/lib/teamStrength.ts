@@ -1,74 +1,75 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Team strength ratings (0–100 scale)
 // Used by the simulation to compute win/draw/loss probabilities.
-// Derived from pre-tournament betting odds / FIFA ranking estimates.
-// Update these mid-tournament as form changes if desired.
+// Derived from Elo ratings computed over ~49k international matches
+// (martj42/international_results dataset, updated June 2026).
+// Auto-updated after each knockout round by scripts/update-strengths.mjs.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
-  ARG: 92,  // Argentina — defending champions
-  FRA: 90,  // France
-  ENG: 87,  // England
-  BRA: 86,  // Brazil
-  ESP: 84,  // Spain
-  GER: 83,  // Germany
-  POR: 81,  // Portugal
-  NED: 79,  // Netherlands
-  MAR: 73,  // Morocco
-  BEL: 70,  // Belgium
-  URU: 68,  // Uruguay
-  USA: 65,  // USA (host nation boost included)
-  COL: 63,  // Colombia
-  JPN: 62,  // Japan
-  CRO: 60,  // Croatia
-  SUI: 58,  // Switzerland
-  SEN: 55,  // Senegal
-  MEX: 54,  // Mexico (host nation boost included)
-  ECU: 50,  // Ecuador
-  NOR: 48,  // Norway
+  ARG: 95,  // Argentina — defending champions
+  FRA: 86,  // France
+  ENG: 77,  // England
+  BRA: 77,  // Brazil
+  ESP: 100,  // Spain
+  GER: 70,  // Germany
+  POR: 79,  // Portugal
+  NED: 68,  // Netherlands
+  MAR: 68,  // Morocco
+  BEL: 59,  // Belgium
+  URU: 66,  // Uruguay
+  USA: 44,  // USA (host nation boost included)
+  COL: 75,  // Colombia
+  JPN: 68,  // Japan
+  CRO: 66,  // Croatia
+  SUI: 59,  // Switzerland
+  SEN: 59,  // Senegal
+  MEX: 69,  // Mexico (host nation boost included)
+  ECU: 74,  // Ecuador
+  NOR: 60,  // Norway
 
   // ── Picks 21–48 ──────────────────────────────────────────────────────────────
-  CIV: 56,  // Ivory Coast
-  TUR: 59,  // Turkey
-  AUT: 60,  // Austria
-  CAN: 53,  // Canada (host nation boost included)
-  KOR: 56,  // South Korea
-  SWE: 57,  // Sweden
-  CZE: 57,  // Czechia
-  EGY: 51,  // Egypt
-  SCO: 55,  // Scotland
-  PAR: 47,  // Paraguay
-  AUS: 52,  // Australia
-  ALG: 50,  // Algeria
-  GHA: 48,  // Ghana
-  BIH: 44,  // Bosnia & Herzegovina
-  IRN: 48,  // Iran
-  TUN: 47,  // Tunisia
-  COD: 44,  // DR Congo
-  KSA: 47,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
-  UZB: 43,  // Uzbekistan
-  RSA: 42,  // South Africa
-  PAN: 43,  // Panama
-  CPV: 43,  // Cape Verde
-  JOR: 40,  // Jordan
-  IRQ: 44,  // Iraq
-  NZL: 40,  // New Zealand
-  HAI: 35,  // Haiti
-  CUW: 32,  // Curaçao
-  QAT: 40,  // Qatar
+  CIV: 42,  // Ivory Coast
+  TUR: 67,  // Turkey
+  AUT: 52,  // Austria
+  CAN: 54,  // Canada (host nation boost included)
+  KOR: 54,  // South Korea
+  SWE: 37,  // Sweden
+  CZE: 40,  // Czechia
+  EGY: 42,  // Egypt
+  SCO: 47,  // Scotland
+  PAR: 59,  // Paraguay
+  AUS: 56,  // Australia
+  ALG: 54,  // Algeria
+  GHA: 15,  // Ghana
+  BIH: 19,  // Bosnia & Herzegovina
+  IRN: 55,  // Iran
+  TUN: 33,  // Tunisia
+  COD: 36,  // DR Congo
+  KSA: 27,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
+  UZB: 46,  // Uzbekistan
+  RSA: 21,  // South Africa
+  PAN: 51,  // Panama
+  CPV: 22,  // Cape Verde
+  JOR: 38,  // Jordan
+  IRQ: 38,  // Iraq
+  NZL: 28,  // New Zealand
+  HAI: 29,  // Haiti
+  CUW: 11,  // Curaçao
+  QAT: 11,  // Qatar
 
   // ── Undrafted — still needed for full bracket simulation ─────────────────────
-  SAU: 47,  // Saudi Arabia alias (ESPN sometimes uses SAU)
-  ITA: 75,  // Italy
-  DEN: 65,  // Denmark
-  GEO: 48,  // Georgia
-  POL: 57, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
-  SRB: 58, ALB: 48, SVN: 52, GRE: 50,
-  IDN: 38,
-  NGA: 52, CMR: 49, MLI: 46, ANG: 40, TAN: 36,
-  HON: 39, JAM: 41, SLV: 38,
-  VEN: 48, CHI: 50, BOL: 40, PER: 49,
+  SAU: 27,  // Saudi Arabia alias (ESPN sometimes uses SAU)
+  ITA: 64,  // Italy
+  DEN: 58,  // Denmark
+  GEO: 24,  // Georgia
+  POL: 36, UKR: 50, ROU: 27, SVK: 28, HUN: 39,
+  SRB: 42, ALB: 20, SVN: 36, GRE: 42,
+  IDN: 0,
+  NGA: 49, CMR: 30, MLI: 28, ANG: 8, TAN: 0,
+  HON: 31, JAM: 24, SLV: 0,
+  VEN: 43, CHI: 38, BOL: 30, PER: 37,
 };
 
 export function getStrength(abbr: string): number {
