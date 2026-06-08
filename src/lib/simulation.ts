@@ -10,10 +10,12 @@ import { calculateDrafterTotals } from './scoring';
  * Group stage allows draws; knockout rounds are binary (ET/pens → one winner).
  *
  * Formula: P(home wins) = 1 / (1 + 10^((s2 - s1) / D))
- * D = 35 is calibrated for our 0-100 strength scale and produces realistic
- * tail probabilities — e.g. ARG (92) vs PAN (43) → ~96% Argentina, not 68%.
+ * D = 50 is calibrated for our 0-100 strength scale. Standard Elo uses D=400
+ * on a ~600-point spread; scaling to our 0-100 range gives D ≈ 67, but D=50
+ * is slightly more aggressive to keep extreme mismatches realistic
+ * (ARG 92 vs HAI 35 → ~93% Argentina; ARG vs PAN 43 → ~91%).
  * The old linear Bradley-Terry formula (s1/(s1+s2)) drastically over-estimated
- * weaker teams' chances.
+ * weaker teams' chances (Panama was getting 32% vs Argentina).
  */
 function simulateOutcome(
   homeAbbr: string,
@@ -22,7 +24,7 @@ function simulateOutcome(
 ): 'home' | 'away' | 'draw' {
   const s1 = getStrength(homeAbbr);
   const s2 = getStrength(awayAbbr);
-  const D = 35;
+  const D = 50;
   const pHome = 1 / (1 + Math.pow(10, (s2 - s1) / D));
   const r = Math.random();
 
