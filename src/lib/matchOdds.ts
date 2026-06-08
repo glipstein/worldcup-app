@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-06-08T19:07:47.781Z
+// Last fetched: 2026-06-08T20:00:19.691Z
 // Match markets: 38 / 99
 // Strength calibrations: 48 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 38 markets fetched on 2026-06-08T19:07:47.781Z.
+ * 38 markets fetched on 2026-06-08T20:00:19.691Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 0.5961, pDraw: 0.2414, pAway: 0.1626 },
@@ -39,7 +39,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   CZE_RSA: { pHome: 0.4925, pDraw: 0.2836, pAway: 0.2239 },
   ECU_GER: { pHome: 0.1921, pDraw: 0.2414, pAway: 0.5665 },
   ENG_GHA: { pHome: 0.7313, pDraw: 0.1642, pAway: 0.1045 },
-  ESP_CPV: { pHome: 0.8978, pDraw: 0.0709, pAway: 0.0313 },
+  ESP_CPV: { pHome: 0.8969, pDraw: 0.0709, pAway: 0.0322 },
   ESP_KSA: { pHome: 0.8788, pDraw: 0.0844, pAway: 0.0367 },
   FRA_IRQ: { pHome: 0.8667, pDraw: 0.0952, pAway: 0.0381 },
   FRA_SEN: { pHome: 0.6683, pDraw: 0.2060, pAway: 0.1256 },
@@ -54,8 +54,8 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   NED_SWE: { pHome: 0.5920, pDraw: 0.2338, pAway: 0.1741 },
   NOR_FRA: { pHome: 0.2206, pDraw: 0.2598, pAway: 0.5196 },
   PAN_ENG: { pHome: 0.0900, pDraw: 0.1550, pAway: 0.7550 },
-  QAT_SUI: { pHome: 0.0667, pDraw: 0.1355, pAway: 0.7978 },
-  SCO_BRA: { pHome: 0.1337, pDraw: 0.1980, pAway: 0.6683 },
+  QAT_SUI: { pHome: 0.0644, pDraw: 0.1358, pAway: 0.7998 },
+  SCO_BRA: { pHome: 0.1379, pDraw: 0.1970, pAway: 0.6650 },
   SCO_MAR: { pHome: 0.2239, pDraw: 0.2836, pAway: 0.4925 },
   SEN_IRQ: { pHome: 0.6733, pDraw: 0.2030, pAway: 0.1238 },
   SUI_BIH: { pHome: 0.5980, pDraw: 0.2362, pAway: 0.1658 },
@@ -126,4 +126,4 @@ export const MARKET_STRENGTH: Record<string, number> = {
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-08T19:07:47.781Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-08T20:00:19.691Z';
