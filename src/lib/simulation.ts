@@ -6,19 +6,48 @@ import { calculateDrafterTotals } from './scoring';
 
 // ─── Strength resolver ───────────────────────────────────────────────────────
 
+// Matches the STRENGTH_FLOOR constant in scripts/fetch-match-odds.mjs.
+const MARKET_FLOOR = 10;
+
+// Scale denominator for floor-tier teams.  Set slightly above the highest Elo
+// value found among WC 2026 teams that sit at the market floor (~59, Paraguay).
+// Result: floor teams map into [1, MARKET_FLOOR-1], always below the lowest
+// above-floor market calibration (Korea/Canada = 11).
+const FLOOR_ELO_SCALE = 60;
+
 /**
- * Returns the best available strength estimate for a team, in priority order:
- *   1. MARKET_STRENGTH — derived from Polymarket tournament winner odds,
- *      applied to all 48 WC teams (floor 10 for the weakest).
- *   2. TEAM_STRENGTH   — Elo-computed from ~49k historical matches (fallback
- *      for teams not in the Polymarket winner market at all).
+ * Returns the best strength estimate for a team, resolved in three tiers:
  *
- * This is the value used in the Elo-logistic fallback formula inside
- * simulateOutcome() and in group-stage tiebreaking.  Match-specific
- * MATCH_ODDS take priority before this function is even reached.
+ *  Tier 1 — above-floor market signal (e.g. Belgium 51, Colombia 49):
+ *    Use MARKET_STRENGTH directly.  Covers ~25 of the 48 WC teams.
+ *
+ *  Tier 2 — at-floor market signal (e.g. Algeria, Scotland, Iran, Qatar):
+ *    Polymarket groups these as "can't win the tournament" but their
+ *    per-match quality still differs meaningfully.  Scale their Elo value
+ *    into [1, MARKET_FLOOR-1] so ordering is preserved and they stay
+ *    below all Tier 1 teams (minimum Tier 1 = Korea/Canada = 11).
+ *      formula:  max(1, round(elo × 9 / 60))
+ *      results:  Algeria/Iran ≈ 8, Scotland ≈ 7, Egypt/Czechia ≈ 6,
+ *                Ghana ≈ 2, Qatar/Curaçao ≈ 2
+ *
+ *  Tier 3 — not in the Polymarket winner market (non-WC teams):
+ *    Use raw Elo directly.  These shouldn't appear in live simulations
+ *    but are kept as a safety fallback.
+ *
+ * Note: match-specific MATCH_ODDS take priority over this function entirely;
+ * getEffectiveStrength is only reached when no per-match market exists.
  */
 function getEffectiveStrength(abbr: string): number {
-  return MARKET_STRENGTH[abbr] ?? getStrength(abbr);
+  const market = MARKET_STRENGTH[abbr];
+
+  if (market !== undefined) {
+    if (market > MARKET_FLOOR) return market;          // Tier 1: clear signal
+    // Tier 2: at floor — scale Elo into [1, MARKET_FLOOR-1]
+    const elo = getStrength(abbr);
+    return Math.max(1, Math.round(elo * (MARKET_FLOOR - 1) / FLOOR_ELO_SCALE));
+  }
+
+  return getStrength(abbr);                            // Tier 3: non-WC team
 }
 
 // ─── Probability model ────────────────────────────────────────────────────────
