@@ -157,20 +157,25 @@ function determineQualifiers(
  * Two modes — chosen once per MC batch, not per-sim, based on tournament state:
  *
  * Group stage (bracketIsReal = false):
- *   Score finished matches → simulate remaining group games → derive 32 qualifiers
- *   → run a full random-draw bracket (R32 → Final).
+ *   Score finished matches → simulate remaining group games → derive qualifiers
+ *   → run a full random-draw bracket (R32/R16 → Final).
  *
  * Knockout stage (bracketIsReal = true):
  *   Score finished matches → simulate every pending ESPN match as-scheduled.
  *   Identical logic to runSingleSim's fallback path so both stay in sync.
+ *
+ * config / byAbbr: pass a custom draft to score a different pool (e.g. Euro debug roster).
+ * Defaults to the WC 2026 draft.
  */
 function runOnceFull(
   allMatches: Match[],
   groups: string[][],
-  bracketIsReal: boolean
+  bracketIsReal: boolean,
+  config: typeof DRAFT_CONFIG,
+  byAbbr: Map<string, string>
 ): Record<string, number> {
   const poolPts: Record<string, number> = {};
-  DRAFT_CONFIG.forEach(d => { poolPts[d.id] = 0; });
+  config.forEach(d => { poolPts[d.id] = 0; });
 
   if (bracketIsReal) {
     // ── Knockout stage: simulate directly from ESPN schedule ────────────────
@@ -183,7 +188,7 @@ function runOnceFull(
           : simulateOutcome(m.homeAbbr, m.awayAbbr, m.stage);
 
       for (const abbr of [m.homeAbbr, m.awayAbbr]) {
-        const id = DRAFTER_BY_ABBR.get(abbr);
+        const id = byAbbr.get(abbr);
         if (id) poolPts[id] += fastMatchPts(abbr, m.homeAbbr, outcome, m.stage);
       }
     }
@@ -197,7 +202,7 @@ function runOnceFull(
   for (const m of allMatches) {
     if (m.status !== 'finished' || !m.winner) continue;
     for (const abbr of [m.homeAbbr, m.awayAbbr]) {
-      const id = DRAFTER_BY_ABBR.get(abbr);
+      const id = byAbbr.get(abbr);
       if (id) poolPts[id] += fastMatchPts(abbr, m.homeAbbr, m.winner, m.stage);
     }
     if (m.stage === 'GROUP') {
@@ -215,7 +220,7 @@ function runOnceFull(
     if (!m.homeAbbr || !m.awayAbbr) continue;
     const outcome = simulateOutcome(m.homeAbbr, m.awayAbbr, 'GROUP');
     for (const abbr of [m.homeAbbr, m.awayAbbr]) {
-      const id = DRAFTER_BY_ABBR.get(abbr);
+      const id = byAbbr.get(abbr);
       if (id) poolPts[id] += fastMatchPts(abbr, m.homeAbbr, outcome, 'GROUP');
     }
     soccer[m.homeAbbr] = soccer[m.homeAbbr] ?? 0;
@@ -236,7 +241,7 @@ function runOnceFull(
       const away = bracket[i + 1];
       const outcome = simulateOutcome(home, away, stage);
       const winner = outcome === 'home' ? home : away;
-      const winnerId = DRAFTER_BY_ABBR.get(winner);
+      const winnerId = byAbbr.get(winner);
       if (winnerId) poolPts[winnerId] += STAGE_PTS[stage].win;
       winners.push(winner);
     }
@@ -254,8 +259,13 @@ function runOnceFull(
  *
  * Mirrors runOnceFull's two-mode logic exactly, but builds real Match objects
  * so calculateDrafterTotals can produce the per-round column breakdown.
+ *
+ * Pass `config` to use a custom draft roster (e.g. Euro debug roster).
  */
-export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
+export function runSingleSim(
+  allMatches: Match[],
+  config: typeof DRAFT_CONFIG = DRAFT_CONFIG
+): DrafterTotals[] {
   const groups = buildGroups(allMatches);
   const finished = allMatches.filter(m => m.status === 'finished');
   const pending  = allMatches.filter(m => m.status !== 'finished');
@@ -274,7 +284,7 @@ export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
           awayScore: outcome === 'away' ? 1 : 0,
         };
       });
-    return calculateDrafterTotals([...finished, ...simulated]);
+    return calculateDrafterTotals([...finished, ...simulated], config);
   }
 
   // ── Group stage: simulate groups + build bracket Match objects ─────────────
@@ -337,7 +347,7 @@ export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
     bracket = winners;
   }
 
-  return calculateDrafterTotals([...finished, ...simGroupMatches, ...bracketMatches]);
+  return calculateDrafterTotals([...finished, ...simGroupMatches, ...bracketMatches], config);
 }
 
 /**
@@ -346,19 +356,23 @@ export function runSingleSim(allMatches: Match[]): DrafterTotals[] {
  * Uses the same two-mode logic as runSingleSim (via runOnceFull) so both functions
  * stay in sync as the tournament progresses through group stage → knockout rounds.
  * bracketIsReal is computed once per batch for efficiency.
+ *
+ * Pass `config` / `byAbbr` to score a custom draft roster (e.g. Euro debug roster).
  */
 export function runMonteCarlo(
   allMatches: Match[],
-  numSims = 50_000
+  numSims = 50_000,
+  config: typeof DRAFT_CONFIG = DRAFT_CONFIG,
+  byAbbr: Map<string, string> = DRAFTER_BY_ABBR
 ): Record<string, number> {
   const groups = buildGroups(allMatches);
   const bracketIsReal = knockoutBracketIsReal(allMatches);
 
   const wins: Record<string, number> = {};
-  DRAFT_CONFIG.forEach(d => { wins[d.id] = 0; });
+  config.forEach(d => { wins[d.id] = 0; });
 
   for (let i = 0; i < numSims; i++) {
-    const pts = runOnceFull(allMatches, groups, bracketIsReal);
+    const pts = runOnceFull(allMatches, groups, bracketIsReal, config, byAbbr);
     const max = Math.max(...Object.values(pts));
     const leaders = Object.entries(pts)
       .filter(([, v]) => v === max)
@@ -367,6 +381,6 @@ export function runMonteCarlo(
   }
 
   const probs: Record<string, number> = {};
-  DRAFT_CONFIG.forEach(d => { probs[d.id] = (wins[d.id] ?? 0) / numSims; });
+  config.forEach(d => { probs[d.id] = (wins[d.id] ?? 0) / numSims; });
   return probs;
 }

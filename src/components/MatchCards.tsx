@@ -1,17 +1,26 @@
 import { useRef, useMemo, useEffect } from 'react';
 import type { Match } from '../lib/types';
+import type { DrafterConfig } from '../config/draft';
 import { DRAFTER_BY_ABBR, DRAFTER_BY_ID } from '../config/draft';
 import Flag from './Flag';
 
 interface Props {
   matches: Match[];
+  /** Pass a custom draft config to show drafter color coding for non-WC rosters */
+  config?: DrafterConfig[];
 }
 
 // ─── Single match card ────────────────────────────────────────────────────────
 
-function MatchCard({ match }: { match: Match }) {
-  const homeDrafter = DRAFTER_BY_ID.get(DRAFTER_BY_ABBR.get(match.homeAbbr) ?? '');
-  const awayDrafter = DRAFTER_BY_ID.get(DRAFTER_BY_ABBR.get(match.awayAbbr) ?? '');
+interface MatchCardProps {
+  match: Match;
+  byAbbr: Map<string, string>;
+  byId: Map<string, DrafterConfig>;
+}
+
+function MatchCard({ match, byAbbr, byId }: MatchCardProps) {
+  const homeDrafter = byId.get(byAbbr.get(match.homeAbbr) ?? '');
+  const awayDrafter = byId.get(byAbbr.get(match.awayAbbr) ?? '');
   const hasDraftedTeam = !!(homeDrafter || awayDrafter);
 
   const timeStr = new Date(match.date).toLocaleTimeString([], {
@@ -114,8 +123,22 @@ function MatchCard({ match }: { match: Match }) {
 
 const STATUS_ORDER: Record<string, number> = { live: 0, finished: 1, scheduled: 2 };
 
-export default function MatchCards({ matches }: Props) {
+export default function MatchCards({ matches, config }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Derive lookup maps — use provided config, or fall back to the WC 2026 defaults
+  const byAbbr = useMemo(
+    () => config
+      ? new Map<string, string>(config.flatMap(d => d.teams.map(t => [t.espnAbbr, d.id])))
+      : DRAFTER_BY_ABBR,
+    [config]
+  );
+  const byId = useMemo(
+    () => config
+      ? new Map<string, DrafterConfig>(config.map(d => [d.id, d]))
+      : DRAFTER_BY_ID,
+    [config]
+  );
 
   // Group by UTC date, sort within each day by status
   const groups = useMemo(() => {
@@ -195,7 +218,7 @@ export default function MatchCards({ matches }: Props) {
                       : undefined
                   }
                 >
-                  <MatchCard match={m} />
+                  <MatchCard match={m} byAbbr={byAbbr} byId={byId} />
                 </div>
               ))}
             </div>

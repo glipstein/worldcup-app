@@ -88,8 +88,16 @@ function buildTeamRow(
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export function calculateDrafterTotals(matches: Match[]): DrafterTotals[] {
-  return DRAFT_CONFIG.map(drafter => {
+/**
+ * Calculate per-drafter totals from match data.
+ * Pass a custom `config` to use a different draft (e.g. for the debug page's Euro roster).
+ * Defaults to the WC 2026 draft config.
+ */
+export function calculateDrafterTotals(
+  matches: Match[],
+  config: typeof DRAFT_CONFIG = DRAFT_CONFIG
+): DrafterTotals[] {
+  return config.map(drafter => {
     const teams = drafter.teams.map(team =>
       buildTeamRow(team.espnAbbr, drafter.id, team.flag, team.name, matches)
     );

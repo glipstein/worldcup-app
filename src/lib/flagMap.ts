@@ -27,6 +27,7 @@ export const ESPN_TO_ISO2: Record<string, string> = {
   ROU: 'ro', RSA: 'za', SAU: 'sa', SCO: 'gb-sct', SLV: 'sv',
   SRB: 'rs', SUR: 'sr', SVK: 'sk', SVN: 'si', SWE: 'se',
   SYR: 'sy', TAN: 'tz', THA: 'th', TRI: 'tt', TUN: 'tn',
+  GEO: 'ge',
   TUR: 'tr', UAE: 'ae', UKR: 'ua', UZB: 'uz', VEN: 've',
   VIE: 'vn', WAL: 'gb-wls', ZAM: 'zm', ZIM: 'zw',
 };

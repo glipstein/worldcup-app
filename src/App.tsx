@@ -8,13 +8,18 @@ import PointsTable   from './components/PointsTable';
 import RosterCards   from './components/RosterCards';
 import WorldMap      from './components/WorldMap';
 import SimulatePanel from './components/SimulatePanel';
+import DebugPage     from './components/DebugPage';
 
-type Tab = 'overview' | 'roster' | 'simulate';
+// Show the debug tab when ?debug or ?debug=1 is in the URL
+const IS_DEBUG = new URLSearchParams(window.location.search).has('debug');
+
+type Tab = 'overview' | 'roster' | 'simulate' | 'debug';
 
 const TABS: { id: Tab; label: string; emoji: string }[] = [
   { id: 'overview',  label: 'Overview',  emoji: '📊' },
   { id: 'roster',    label: 'Roster',    emoji: '👥' },
   { id: 'simulate',  label: 'Simulate',  emoji: '🎲' },
+  ...(IS_DEBUG ? [{ id: 'debug' as Tab, label: 'Debug', emoji: '🔧' }] : []),
 ];
 
 export default function App() {
@@ -138,6 +143,11 @@ export default function App() {
         {/* ── Simulate tab ── */}
         {!isLoading && tab === 'simulate' && matches && (
           <SimulatePanel matches={matches} />
+        )}
+
+        {/* ── Debug tab (only when ?debug is in URL) ── */}
+        {tab === 'debug' && IS_DEBUG && (
+          <DebugPage />
         )}
 
       </main>

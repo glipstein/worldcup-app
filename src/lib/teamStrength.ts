@@ -55,6 +55,9 @@ export const TEAM_STRENGTH: Record<string, number> = {
 
   // ── Undrafted — still needed for full bracket simulation ─────────────────────
   SAU: 47,  // Saudi Arabia alias (ESPN sometimes uses SAU)
+  ITA: 75,  // Italy
+  DEN: 65,  // Denmark
+  GEO: 48,  // Georgia
   POL: 57, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
   SRB: 58, ALB: 48, SVN: 52, GRE: 50,
   QAT: 40, IDN: 38,

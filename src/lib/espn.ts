@@ -120,31 +120,36 @@ const DATE_CHUNKS = [
   '20260716-20260719',
 ];
 
-async function fetchChunk(dates: string): Promise<EspnEvent[]> {
-  const url = `${BASE}?dates=${dates}&limit=100`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`ESPN API ${res.status} for ${dates}`);
-  const data = await res.json() as { events?: EspnEvent[] };
-  return data.events ?? [];
-}
-
 /**
- * Fetches all WC 2026 matches from ESPN in parallel weekly chunks.
- * Deduplicates by event ID.
+ * Generic match fetcher for any ESPN soccer scoreboard endpoint.
+ * Fetches all date chunks in parallel, deduplicates by event ID, returns sorted matches.
  */
-export async function fetchAllMatches(): Promise<Match[]> {
-  const chunks = await Promise.all(DATE_CHUNKS.map(fetchChunk));
+export async function fetchMatches(base: string, chunks: string[]): Promise<Match[]> {
+  const allEvents = await Promise.all(
+    chunks.map(async dates => {
+      const url = `${base}?dates=${dates}&limit=100`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`ESPN API ${res.status} for ${dates}`);
+      const data = await res.json() as { events?: EspnEvent[] };
+      return data.events ?? [];
+    })
+  );
+
   const seen = new Set<string>();
   const matches: Match[] = [];
-
-  for (const event of chunks.flat()) {
+  for (const event of allEvents.flat()) {
     if (seen.has(event.id)) continue;
     seen.add(event.id);
     const match = parseEvent(event);
     if (match) matches.push(match);
   }
-
-  // Sort chronologically
   matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   return matches;
+}
+
+/**
+ * Fetches all WC 2026 matches from ESPN in parallel weekly chunks.
+ */
+export async function fetchAllMatches(): Promise<Match[]> {
+  return fetchMatches(BASE, DATE_CHUNKS);
 }

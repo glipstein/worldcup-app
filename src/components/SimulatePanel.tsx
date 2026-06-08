@@ -1,23 +1,30 @@
 import { useState } from 'react';
 import type { Match, SimResult } from '../lib/types';
 import { runSingleSim, runMonteCarlo } from '../lib/simulation';
-import { DRAFT_CONFIG } from '../config/draft';
+import type { DrafterConfig } from '../config/draft';
+import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
 import PointsTable from './PointsTable';
 
 interface Props {
   matches: Match[];
+  /** Override draft roster and abbr map (e.g. for Euro debug mode) */
+  config?: DrafterConfig[];
+  byAbbr?: Map<string, string>;
 }
 
-export default function SimulatePanel({ matches }: Props) {
+export default function SimulatePanel({ matches, config, byAbbr }: Props) {
   const [result, setResult] = useState<SimResult | null>(null);
   const [running, setRunning] = useState(false);
+
+  const activeCfg = config ?? DRAFT_CONFIG;
+  const activeByAbbr = byAbbr ?? DRAFTER_BY_ABBR;
 
   const unplayed = matches.filter(m => m.status !== 'finished').length;
 
   function handleSingle() {
     setRunning(true);
     setTimeout(() => {
-      setResult({ mode: 'single', drafterTotals: runSingleSim(matches) });
+      setResult({ mode: 'single', drafterTotals: runSingleSim(matches, activeCfg) });
       setRunning(false);
     }, 0);
   }
@@ -25,7 +32,10 @@ export default function SimulatePanel({ matches }: Props) {
   function handleMonteCarlo() {
     setRunning(true);
     setTimeout(() => {
-      setResult({ mode: 'montecarlo', winProbabilities: runMonteCarlo(matches) });
+      setResult({
+        mode: 'montecarlo',
+        winProbabilities: runMonteCarlo(matches, 50_000, activeCfg, activeByAbbr),
+      });
       setRunning(false);
     }, 0);
   }
@@ -145,7 +155,7 @@ export default function SimulatePanel({ matches }: Props) {
             Pool win probability — 50 000 simulations
           </h3>
           <div className="space-y-3">
-            {DRAFT_CONFIG
+            {activeCfg
               .slice()
               .sort(
                 (a, b) =>
