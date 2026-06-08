@@ -1,0 +1,66 @@
+name: Auto-update team strengths after round completion
+
+# Runs every 6 hours year-round (fast-exits outside the tournament window).
+# When the ESPN API shows that all matches in a new stage are finished AND
+# the 18-hour martj42 lag has elapsed, this workflow:
+#   1. Recomputes Elo ratings from the full martj42/international_results CSV
+#   2. Patches src/lib/teamStrength.ts with updated 0-100 strength values
+#   3. Updates .github/elo-update-state.json so the stage isn't re-processed
+#   4. Commits and pushes both files, triggering a GitHub Pages deploy
+#
+# You can also run the original manual workflow at any time:
+#   Actions → "Update team strength ratings" → Run workflow
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:         # manual trigger for testing
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ── Step 1: poll ESPN and decide whether a new round just finished ────────
+      - name: Check whether a new stage has completed
+        id: round_check
+        run: node scripts/check-round-complete.mjs
+
+      # ── Steps 2-5 only run when trigger_update == 'true' ─────────────────────
+
+      - name: Compute Elo ratings and patch teamStrength.ts
+        if: steps.round_check.outputs.trigger_update == 'true'
+        run: node scripts/update-strengths.mjs
+
+      - name: Update Elo state file
+        if: steps.round_check.outputs.trigger_update == 'true'
+        run: |
+          STAGE="${{ steps.round_check.outputs.completed_stage }}"
+          TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf '{\n  "lastUpdatedStage": "%s",\n  "lastUpdatedAt": "%s"\n}\n' \
+            "$STAGE" "$TIMESTAMP" \
+            > .github/elo-update-state.json
+          echo "State file updated: stage=$STAGE at $TIMESTAMP"
+
+      - name: Show strength diff
+        if: steps.round_check.outputs.trigger_update == 'true'
+        run: git diff src/lib/teamStrength.ts
+
+      - name: Commit and push
+        if: steps.round_check.outputs.trigger_update == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/lib/teamStrength.ts .github/elo-update-state.json
+          git diff --staged --quiet && echo "No changes to commit." && exit 0
+          STAGE="${{ steps.round_check.outputs.completed_stage }}"
+          git commit -m "chore: auto-update strengths after ${STAGE} ($(date -u +%Y-%m-%d))"
+          git push
