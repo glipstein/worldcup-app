@@ -1,19 +1,18 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Match-specific win probabilities sourced from Polymarket prediction market.
+// Match-specific win probabilities + market-calibrated team strengths.
 // Auto-updated every 6 hours by scripts/fetch-match-odds.mjs via GitHub Actions.
-// Source: gamma-api.polymarket.com — fifwc-* match events
+// Source: gamma-api.polymarket.com
 //
-// Key format: "HOMEABBR_AWAYABBR"  (ESPN API home/away designation)
-// pHome + pDraw + pAway = 1.0 (normalized from Polymarket market prices)
+// MATCH_ODDS key format: "HOMEABBR_AWAYABBR"  (ESPN API home/away designation)
+//   pHome + pDraw + pAway = 1.0 (normalized from Polymarket 3-way market prices)
 //
-// Coverage:
-//   Group stage  — all 72 scheduled matches (available pre-tournament)
-//   Knockout     — added as each round's bracket is published on Polymarket
-//   Fallback     — simulation.ts uses the Elo/strength formula for any match
-//                  not covered here (hypothetical bracket paths, early in tourney)
+// MARKET_STRENGTH: derived from the "world-cup-winner" outright market.
+//   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 0, 100 )
+//   Only teams with p ≥ 0.5% are included; others keep Elo-based TEAM_STRENGTH.
 //
-// Last fetched: 2026-06-08T18:36:10.001Z
-// Markets found: 38 / 99
+// Last fetched: 2026-06-08T18:53:30.561Z
+// Match markets: 38 / 99
+// Strength calibrations: 21 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,8 +22,8 @@ export interface MatchOdds {
 }
 
 /**
- * Polymarket match odds keyed by "HOMEABBR_AWAYABBR".
- * 38 markets fetched on 2026-06-08T18:36:10.001Z.
+ * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
+ * 38 markets fetched on 2026-06-08T18:53:30.561Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 0.5961, pDraw: 0.2414, pAway: 0.1626 },
@@ -67,5 +66,37 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   USA_AUS: { pHome: 0.5522, pDraw: 0.2438, pAway: 0.2040 },
 };
 
+/**
+ * Market-calibrated team strengths (0-100) derived from Polymarket tournament
+ * winner odds.  Used by simulation.ts as the fallback strength when no
+ * match-specific market exists (e.g. hypothetical bracket paths).
+ *
+ * 21 teams covered (p ≥ 0.5%); teams below threshold use Elo TEAM_STRENGTH.
+ * Sorted strongest-first for readability.
+ */
+export const MARKET_STRENGTH: Record<string, number> = {
+  ESP: 94,
+  FRA: 94,
+  ENG: 86,
+  POR: 84,
+  ARG: 81,
+  BRA: 80,
+  GER: 70,
+  NED: 64,
+  NOR: 54,
+  BEL: 51,
+  JPN: 51,
+  COL: 49,
+  MAR: 49,
+  MEX: 42,
+  TUR: 39,
+  SUI: 37,
+  USA: 37,
+  URU: 35,
+  CRO: 33,
+  ECU: 31,
+  SEN: 25,
+};
+
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-08T18:36:10.001Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-08T18:53:30.561Z';

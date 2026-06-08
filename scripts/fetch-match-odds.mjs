@@ -27,6 +27,94 @@ const __dirname  = dirname(__filename);
 const ROOT       = join(__dirname, '..');
 const OUT_PATH   = join(ROOT, 'src/lib/matchOdds.ts');
 
+// ── Winner market: Polymarket display name → ESPN abbreviation ───────────────
+// Used to parse the "world-cup-winner" event (one child market per team).
+// Names verified against the live market on 2026-06-08.
+const WINNER_NAME_TO_ESPN = {
+  'Spain':                    'ESP',
+  'France':                   'FRA',
+  'England':                  'ENG',
+  'Brazil':                   'BRA',
+  'Portugal':                 'POR',
+  'Argentina':                'ARG',
+  'Germany':                  'GER',
+  'Netherlands':              'NED',
+  'Norway':                   'NOR',
+  'Belgium':                  'BEL',
+  'Japan':                    'JPN',
+  'Colombia':                 'COL',
+  'Morocco':                  'MAR',
+  'Mexico':                   'MEX',
+  'Turkiye':                  'TUR',
+  'Turkey':                   'TUR',
+  'Switzerland':              'SUI',
+  'United States':            'USA',
+  'USA':                      'USA',
+  'Croatia':                  'CRO',
+  'Ecuador':                  'ECU',
+  'Uruguay':                  'URU',
+  'Senegal':                  'SEN',
+  'Austria':                  'AUT',
+  'Ivory Coast':              'CIV',
+  "Cote d'Ivoire":            'CIV',
+  'Sweden':                   'SWE',
+  'Canada':                   'CAN',
+  'South Korea':              'KOR',
+  'Czechia':                  'CZE',
+  'Czech Republic':           'CZE',
+  'Scotland':                 'SCO',
+  'Paraguay':                 'PAR',
+  'Egypt':                    'EGY',
+  'Algeria':                  'ALG',
+  'Australia':                'AUS',
+  'Bosnia-Herzegovina':       'BIH',
+  'Bosnia & Herzegovina':     'BIH',
+  'Bosnia and Herzegovina':   'BIH',
+  'Iran':                     'IRN',
+  'Ghana':                    'GHA',
+  'Congo DR':                 'COD',
+  'DR Congo':                 'COD',
+  'Saudi Arabia':             'KSA',
+  'Tunisia':                  'TUN',
+  'Uzbekistan':               'UZB',
+  'Panama':                   'PAN',
+  'Iraq':                     'IRQ',
+  'South Africa':             'RSA',
+  'Haiti':                    'HAI',
+  'New Zealand':              'NZL',
+  'Jordan':                   'JOR',
+  'Curaçao':                  'CUW',
+  'Curacao':                  'CUW',
+  'Cape Verde':               'CPV',
+  'Qatar':                    'QAT',
+};
+
+// ── Market-implied strength formula ──────────────────────────────────────────
+//
+// Converts a team's tournament outright-win probability p into a 0-100 strength
+// value on the same scale as TEAM_STRENGTH (Elo-derived).
+//
+// Formula:  s = clamp( 50 + 50 × log₁₀(p / P_AVG) , 0, 100 )
+//
+// Calibration anchors:
+//   p = P_AVG = 1/48  →  s = 50  (exactly average team in a 48-team field)
+//   p = 16%            →  s ≈ 94  (Spain / France — confirmed reasonable)
+//   p = 2%             →  s ≈ 49  (Colombia — down from Elo 75, as expected)
+//   p = 0.85%          →  s ≈ 31  (Ecuador — down from Elo 74)
+//
+// Only applied when p ≥ P_THRESHOLD (0.5%).  Below that, Polymarket signal is
+// too noisy to distinguish per-match quality from bracket luck, so the Elo
+// TEAM_STRENGTH is kept as fallback.
+
+const P_AVERAGE   = 1 / 48;   // equal-strength baseline for a 48-team field
+const P_THRESHOLD = 0.005;    // 0.5% — minimum probability for calibration
+
+function winProbToStrength(p) {
+  if (p < P_THRESHOLD) return null;  // signal too weak → keep Elo fallback
+  const s = 50 + 50 * Math.log10(p / P_AVERAGE);
+  return Math.max(0, Math.min(100, Math.round(s)));
+}
+
 // ── ESPN → Polymarket team-code mapping ──────────────────────────────────────
 // Polymarket uses FIFA/IOC alpha codes that sometimes differ from ESPN's abbrs.
 // For any ESPN code NOT listed here, we fall back to simple `.toLowerCase()`.
@@ -184,6 +272,82 @@ async function fetchMatchOdds(homeAbbr, awayAbbr, date) {
   return reversed_result;
 }
 
+// ── Tournament winner odds → MARKET_STRENGTH ─────────────────────────────────
+
+/**
+ * Fetches the Polymarket "world-cup-winner" event and converts each team's
+ * outright win probability into a market-calibrated strength (0-100).
+ *
+ * Returns a Record<espnAbbr, strength>.  Only teams above P_THRESHOLD (0.5%)
+ * are included — teams below that fall back to Elo in simulation.ts.
+ */
+async function fetchWinnerOdds() {
+  const url = `${PM_BASE}?slug=world-cup-winner`;
+  console.log('\nFetching tournament winner market...');
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) {
+      console.warn(`  Winner market: HTTP ${res.status} — skipping`);
+      return {};
+    }
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('  Winner market: no data returned');
+      return {};
+    }
+
+    const markets = data[0].markets ?? [];
+    const result  = {};
+    let calibrated = 0, skipped = 0, unknown = 0;
+
+    for (const mkt of markets) {
+      const title = mkt.groupItemTitle ?? '';
+      const espn  = WINNER_NAME_TO_ESPN[title];
+      if (!espn) {
+        // "Team AM", "Other", placeholder slots — ignore
+        if (title && !title.startsWith('Team ') && title !== 'Other') {
+          console.log(`  Winner: unrecognised title "${title}"`);
+          unknown++;
+        }
+        continue;
+      }
+
+      const p = getOutcomePrice(mkt.outcomePrices);
+      if (!isFinite(p) || p <= 0) { skipped++; continue; }
+
+      const s = winProbToStrength(p);
+      if (s === null) {
+        // Below threshold — will use Elo fallback; log for visibility
+        console.log(
+          `  Winner: ${espn.padEnd(4)} ${title.padEnd(22)} ` +
+          `p=${(p * 100).toFixed(2).padStart(5)}%  →  below threshold, keeps Elo`
+        );
+        skipped++;
+        continue;
+      }
+
+      result[espn] = s;
+      calibrated++;
+      console.log(
+        `  Winner: ${espn.padEnd(4)} ${title.padEnd(22)} ` +
+        `p=${(p * 100).toFixed(2).padStart(5)}%  →  market strength ${s}`
+      );
+    }
+
+    console.log(
+      `  Done: ${calibrated} teams calibrated, ${skipped} below threshold (keep Elo), ` +
+      `${unknown} unrecognised`
+    );
+    return result;
+  } catch (e) {
+    console.warn(`  Winner market fetch failed: ${e.message} — skipping`);
+    return {};
+  }
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function sleep(ms) {
@@ -244,37 +408,46 @@ async function main() {
   );
 
   if (found === 0) {
-    console.warn('\nZero markets found — keeping existing matchOdds.ts unchanged.');
+    console.warn('\nZero match markets found — keeping existing matchOdds.ts unchanged.');
     process.exit(0);
   }
+
+  // ── Fetch tournament winner odds for market-calibrated strength values ──────
+  const marketStrength = await fetchWinnerOdds();
 
   // ── Generate matchOdds.ts ──────────────────────────────────────────────────
   const now = new Date().toISOString();
 
-  const entries = Object.entries(oddsMap)
+  const matchEntries = Object.entries(oddsMap)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, { pHome, pDraw, pAway }]) =>
       `  ${key}: { pHome: ${fmt(pHome)}, pDraw: ${fmt(pDraw)}, pAway: ${fmt(pAway)} },`
     )
     .join('\n');
 
+  const strengthEntries = Object.entries(marketStrength)
+    .sort(([a], [b]) => marketStrength[b] - marketStrength[a] || a.localeCompare(b))
+    .map(([abbr, s]) => `  ${abbr}: ${s},`)
+    .join('\n');
+
+  const calibratedCount = Object.keys(marketStrength).length;
+
   const output =
 `// ─────────────────────────────────────────────────────────────────────────────
-// Match-specific win probabilities sourced from Polymarket prediction market.
+// Match-specific win probabilities + market-calibrated team strengths.
 // Auto-updated every 6 hours by scripts/fetch-match-odds.mjs via GitHub Actions.
-// Source: gamma-api.polymarket.com — fifwc-* match events
+// Source: gamma-api.polymarket.com
 //
-// Key format: "HOMEABBR_AWAYABBR"  (ESPN API home/away designation)
-// pHome + pDraw + pAway = 1.0 (normalized from Polymarket market prices)
+// MATCH_ODDS key format: "HOMEABBR_AWAYABBR"  (ESPN API home/away designation)
+//   pHome + pDraw + pAway = 1.0 (normalized from Polymarket 3-way market prices)
 //
-// Coverage:
-//   Group stage  — all 72 scheduled matches (available pre-tournament)
-//   Knockout     — added as each round's bracket is published on Polymarket
-//   Fallback     — simulation.ts uses the Elo/strength formula for any match
-//                  not covered here (hypothetical bracket paths, early in tourney)
+// MARKET_STRENGTH: derived from the "world-cup-winner" outright market.
+//   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 0, 100 )
+//   Only teams with p ≥ 0.5% are included; others keep Elo-based TEAM_STRENGTH.
 //
 // Last fetched: ${now}
-// Markets found: ${found} / ${real.length}
+// Match markets: ${found} / ${real.length}
+// Strength calibrations: ${calibratedCount} teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -284,11 +457,23 @@ export interface MatchOdds {
 }
 
 /**
- * Polymarket match odds keyed by "HOMEABBR_AWAYABBR".
+ * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
  * ${found} markets fetched on ${now}.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
-${entries}
+${matchEntries}
+};
+
+/**
+ * Market-calibrated team strengths (0-100) derived from Polymarket tournament
+ * winner odds.  Used by simulation.ts as the fallback strength when no
+ * match-specific market exists (e.g. hypothetical bracket paths).
+ *
+ * ${calibratedCount} teams covered (p ≥ 0.5%); teams below threshold use Elo TEAM_STRENGTH.
+ * Sorted strongest-first for readability.
+ */
+export const MARKET_STRENGTH: Record<string, number> = {
+${strengthEntries}
 };
 
 /** ISO timestamp of the last successful fetch. */
@@ -296,7 +481,7 @@ export const MATCH_ODDS_FETCHED_AT = '${now}';
 `;
 
   writeFileSync(OUT_PATH, output, 'utf8');
-  console.log(`\nWrote ${OUT_PATH}  (${found} entries)`);
+  console.log(`\nWrote ${OUT_PATH}  (${found} match markets, ${calibratedCount} strength calibrations)`);
 }
 
 main().catch(err => {

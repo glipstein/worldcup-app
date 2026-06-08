@@ -1,8 +1,24 @@
 import type { Match, Stage, DrafterTotals } from './types';
 import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
 import { getStrength, TEAM_STRENGTH } from './teamStrength';
-import { MATCH_ODDS } from './matchOdds';
+import { MATCH_ODDS, MARKET_STRENGTH } from './matchOdds';
 import { calculateDrafterTotals } from './scoring';
+
+// ─── Strength resolver ───────────────────────────────────────────────────────
+
+/**
+ * Returns the best available strength estimate for a team, in priority order:
+ *   1. MARKET_STRENGTH — derived from Polymarket tournament winner odds
+ *      (covers teams with ≥0.5% win probability, ~21 of 48 teams)
+ *   2. TEAM_STRENGTH   — Elo-computed from ~49k historical matches
+ *
+ * This is the value used in the Elo-logistic fallback formula inside
+ * simulateOutcome() and in group-stage tiebreaking.  Match-specific
+ * MATCH_ODDS take priority before this function is even reached.
+ */
+function getEffectiveStrength(abbr: string): number {
+  return MARKET_STRENGTH[abbr] ?? getStrength(abbr);
+}
 
 // ─── Probability model ────────────────────────────────────────────────────────
 
@@ -44,9 +60,9 @@ function simulateOutcome(
     return 'away';
   }
 
-  // ── Tier 2: Elo-logistic fallback ────────────────────────────────────────
-  const s1 = getStrength(homeAbbr);
-  const s2 = getStrength(awayAbbr);
+  // ── Tier 2: market-calibrated strength (or Elo if no market data) ────────
+  const s1 = getEffectiveStrength(homeAbbr);
+  const s2 = getEffectiveStrength(awayAbbr);
   const D = 50;
   const pHome = 1 / (1 + Math.pow(10, (s2 - s1) / D));
   const r = Math.random();
@@ -168,7 +184,7 @@ function determineQualifiers(
   for (const group of groups) {
     const sorted = [...group].sort((a, b) => {
       const pd = (soccer[b] ?? 0) - (soccer[a] ?? 0);
-      return pd !== 0 ? pd : getStrength(b) - getStrength(a);
+      return pd !== 0 ? pd : getEffectiveStrength(b) - getEffectiveStrength(a);
     });
     if (sorted[0]) top2.push(sorted[0]);
     if (sorted[1]) top2.push(sorted[1]);
@@ -177,7 +193,7 @@ function determineQualifiers(
 
   thirdPlace.sort((a, b) => {
     const pd = b.pts - a.pts;
-    return pd !== 0 ? pd : getStrength(b.abbr) - getStrength(a.abbr);
+    return pd !== 0 ? pd : getEffectiveStrength(b.abbr) - getEffectiveStrength(a.abbr);
   });
 
   return [...top2, ...thirdPlace.slice(0, 8).map(t => t.abbr)];
