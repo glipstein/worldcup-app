@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const TEAM_STRENGTH: Record<string, number> = {
-  // Drafted teams
+  // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 92,  // Argentina — defending champions
   FRA: 90,  // France
   ENG: 87,  // England
@@ -28,24 +28,40 @@ export const TEAM_STRENGTH: Record<string, number> = {
   ECU: 50,  // Ecuador
   NOR: 48,  // Norway
 
-  // Other WC 2026 teams (undrafted — needed for full bracket simulation)
-  POL: 57, TUR: 59, AUT: 60, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
-  SRB: 58, ALB: 48, SVN: 52, GRE: 50, CZE: 57, SCO: 55,
-  KOR: 56, AUS: 52, IRN: 48,
-  // Saudi Arabia: ESPN uses KSA (not SAU) — keep both so either abbreviation works
-  SAU: 47, KSA: 47,
+  // ── Picks 21–43 ──────────────────────────────────────────────────────────────
+  CIV: 56,  // Ivory Coast
+  TUR: 59,  // Turkey
+  AUT: 60,  // Austria
+  CAN: 53,  // Canada (host nation boost included)
+  KOR: 56,  // South Korea
+  SWE: 57,  // Sweden
+  CZE: 57,  // Czechia
+  EGY: 51,  // Egypt
+  SCO: 55,  // Scotland
+  PAR: 47,  // Paraguay
+  AUS: 52,  // Australia
+  ALG: 50,  // Algeria
+  GHA: 48,  // Ghana
+  BIH: 44,  // Bosnia & Herzegovina
+  IRN: 48,  // Iran
+  TUN: 47,  // Tunisia
+  COD: 44,  // DR Congo
+  KSA: 47,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
+  UZB: 43,  // Uzbekistan
+  RSA: 42,  // South Africa
+  PAN: 43,  // Panama
+  CPV: 43,  // Cape Verde
+  JOR: 40,  // Jordan
+
+  // ── Undrafted — still needed for full bracket simulation ─────────────────────
+  SAU: 47,  // Saudi Arabia alias (ESPN sometimes uses SAU)
+  POL: 57, UKR: 56, ROU: 55, SVK: 52, HUN: 48,
+  SRB: 58, ALB: 48, SVN: 52, GRE: 50,
   QAT: 40, IDN: 38,
-  // Africa
-  EGY: 51, NGA: 52, CMR: 49, GHA: 48, MLI: 46,
-  RSA: 42, ANG: 40, TAN: 36, CIV: 56,
-  ALG: 50, // Algeria — ESPN abbreviation ALG
-  TUN: 47, // Tunisia — ESPN abbreviation TUN
-  // CONCACAF
-  CAN: 53, HON: 39, JAM: 41, PAN: 43, SLV: 38, HAI: 35, CUW: 32,
-  // CONMEBOL (undrafted)
-  VEN: 48, CHI: 50, BOL: 40, PAR: 47, PER: 49,
-  // OFC / other
-  NZL: 40, BIH: 44,
+  NGA: 52, CMR: 49, MLI: 46, ANG: 40, TAN: 36,
+  HON: 39, JAM: 41, SLV: 38, HAI: 35, CUW: 32,
+  VEN: 48, CHI: 50, BOL: 40, PER: 49,
+  NZL: 40,
 };
 
 export function getStrength(abbr: string): number {
