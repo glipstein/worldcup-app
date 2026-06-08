@@ -8,9 +8,10 @@ import { calculateDrafterTotals } from './scoring';
 
 /**
  * Returns the best available strength estimate for a team, in priority order:
- *   1. MARKET_STRENGTH — derived from Polymarket tournament winner odds
- *      (covers teams with ≥0.5% win probability, ~21 of 48 teams)
- *   2. TEAM_STRENGTH   — Elo-computed from ~49k historical matches
+ *   1. MARKET_STRENGTH — derived from Polymarket tournament winner odds,
+ *      applied to all 48 WC teams (floor 10 for the weakest).
+ *   2. TEAM_STRENGTH   — Elo-computed from ~49k historical matches (fallback
+ *      for teams not in the Polymarket winner market at all).
  *
  * This is the value used in the Elo-logistic fallback formula inside
  * simulateOutcome() and in group-stage tiebreaking.  Match-specific

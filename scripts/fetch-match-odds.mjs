@@ -106,13 +106,21 @@ const WINNER_NAME_TO_ESPN = {
 // too noisy to distinguish per-match quality from bracket luck, so the Elo
 // TEAM_STRENGTH is kept as fallback.
 
-const P_AVERAGE   = 1 / 48;   // equal-strength baseline for a 48-team field
-const P_THRESHOLD = 0.005;    // 0.5% — minimum probability for calibration
+const P_AVERAGE = 1 / 48;   // equal-strength baseline for a 48-team field
+
+// No threshold: apply to all 48 WC teams.  Below ~0.26% the formula gives
+// negative values, so we clamp to a floor of 10.  This avoids the boundary
+// inversion that a hard threshold creates (e.g. Belgium market-calibrated to
+// 51 but Iran kept at Elo 55 because it fell below the old 0.5% cutoff).
+// Teams at the floor (Iran 0.15%, Korea 0.35%, Qatar 0.05%, etc.) are all
+// genuinely long-shots; the difference between floor=10 and their old Elo
+// values is deliberate — the market is saying Elo over-rates them.
+const STRENGTH_FLOOR = 10;
 
 function winProbToStrength(p) {
-  if (p < P_THRESHOLD) return null;  // signal too weak → keep Elo fallback
+  if (!p || p <= 0) return null;   // null prices / placeholder markets → skip
   const s = 50 + 50 * Math.log10(p / P_AVERAGE);
-  return Math.max(0, Math.min(100, Math.round(s)));
+  return Math.max(STRENGTH_FLOOR, Math.min(100, Math.round(s)));
 }
 
 // ── ESPN → Polymarket team-code mapping ──────────────────────────────────────
@@ -319,28 +327,19 @@ async function fetchWinnerOdds() {
       if (!isFinite(p) || p <= 0) { skipped++; continue; }
 
       const s = winProbToStrength(p);
-      if (s === null) {
-        // Below threshold — will use Elo fallback; log for visibility
-        console.log(
-          `  Winner: ${espn.padEnd(4)} ${title.padEnd(22)} ` +
-          `p=${(p * 100).toFixed(2).padStart(5)}%  →  below threshold, keeps Elo`
-        );
-        skipped++;
-        continue;
-      }
+      if (s === null) { skipped++; continue; }  // shouldn't happen (p > 0 guaranteed above)
 
+      const atFloor = s === STRENGTH_FLOOR;
       result[espn] = s;
       calibrated++;
       console.log(
         `  Winner: ${espn.padEnd(4)} ${title.padEnd(22)} ` +
-        `p=${(p * 100).toFixed(2).padStart(5)}%  →  market strength ${s}`
+        `p=${(p * 100).toFixed(2).padStart(5)}%  →  strength ${s}` +
+        (atFloor ? '  (floor)' : '')
       );
     }
 
-    console.log(
-      `  Done: ${calibrated} teams calibrated, ${skipped} below threshold (keep Elo), ` +
-      `${unknown} unrecognised`
-    );
+    console.log(`  Done: ${calibrated} teams calibrated, ${skipped} skipped, ${unknown} unrecognised`);
     return result;
   } catch (e) {
     console.warn(`  Winner market fetch failed: ${e.message} — skipping`);
@@ -442,8 +441,8 @@ async function main() {
 //   pHome + pDraw + pAway = 1.0 (normalized from Polymarket 3-way market prices)
 //
 // MARKET_STRENGTH: derived from the "world-cup-winner" outright market.
-//   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 0, 100 )
-//   Only teams with p ≥ 0.5% are included; others keep Elo-based TEAM_STRENGTH.
+//   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
+//   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
 // Last fetched: ${now}
 // Match markets: ${found} / ${real.length}
@@ -469,7 +468,7 @@ ${matchEntries}
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * ${calibratedCount} teams covered (p ≥ 0.5%); teams below threshold use Elo TEAM_STRENGTH.
+ * ${calibratedCount} teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
