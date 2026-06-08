@@ -19,7 +19,7 @@ export const TEAM_STRENGTH: Record<string, number> = {
   MAR: 68,  // Morocco
   BEL: 59,  // Belgium
   URU: 66,  // Uruguay
-  USA: 44,  // USA (host nation boost included)
+  USA: 58,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
   COL: 75,  // Colombia
   JPN: 68,  // Japan
   CRO: 66,  // Croatia
