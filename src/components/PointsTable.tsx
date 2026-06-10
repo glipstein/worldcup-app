@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import type { DrafterTotals } from '../lib/types';
 import Flag from './Flag';
 
@@ -62,10 +63,9 @@ export default function PointsTable({ drafters, label, labelColor }: Props) {
           </thead>
           <tbody>
             {drafters.map(drafter => (
-              <>
+              <Fragment key={drafter.id}>
                 {/* Drafter header */}
                 <tr
-                  key={`hdr-${drafter.id}`}
                   className="border-t-2 border-slate-800"
                   style={{ borderLeftColor: drafter.color, borderLeftWidth: 3 }}
                 >
@@ -110,7 +110,7 @@ export default function PointsTable({ drafters, label, labelColor }: Props) {
                     </td>
                   </tr>
                 ))}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
