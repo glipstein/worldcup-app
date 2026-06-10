@@ -53,6 +53,31 @@ function getEffectiveStrength(abbr: string): number {
 // ─── Probability model ────────────────────────────────────────────────────────
 
 /**
+ * Per-match logistic steepness D in  P(home) = 1 / (1 + 10^((s2 - s1) / D)).
+ *
+ * Larger D ⇒ flatter ⇒ more parity ⇒ favorites win individual matches by a
+ * smaller margin, so championship probability spreads out instead of piling
+ * onto the top seeds. Calibrated against the Polymarket world-cup-winner market
+ * (see scripts/calibrate-d.ts) so the *simulated* champion odds reproduce the
+ * market — keeping the team-odds chart a meaningful realism check rather than
+ * an inflated favorite-heavy curve.
+ *
+ * matchModelD is mutable solely so the calibration script can sweep candidate
+ * values; all production code paths run at DEFAULT_MATCH_D.
+ */
+// D=110 calibrated 2026-06-10 against the Polymarket winner market: weighted
+// mean abs error 0.4% across the top ~26 teams (vs 3.5% at the old D=50, which
+// inflated Spain to ~25% against a ~16% market). Re-run scripts/calibrate-d.ts
+// if the strength model or market structure changes materially.
+const DEFAULT_MATCH_D = 110;
+let matchModelD = DEFAULT_MATCH_D;
+
+/** Override the per-match steepness D. Used only by scripts/calibrate-d.ts. */
+export function setMatchModelD(d: number): void { matchModelD = d; }
+/** Current per-match steepness D. */
+export function getMatchModelD(): number { return matchModelD; }
+
+/**
  * Match outcome simulator — two-tier probability source:
  *
  * Tier 1 — Polymarket market odds (MATCH_ODDS lookup):
@@ -93,7 +118,7 @@ function simulateOutcome(
   // ── Tier 2: market-calibrated strength (or Elo if no market data) ────────
   const s1 = getEffectiveStrength(homeAbbr);
   const s2 = getEffectiveStrength(awayAbbr);
-  const D = 50;
+  const D = matchModelD;
   const pHome = 1 / (1 + Math.pow(10, (s2 - s1) / D));
   const r = Math.random();
 
