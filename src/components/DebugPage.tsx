@@ -19,9 +19,8 @@ import MatchCards    from './MatchCards';
 import Leaderboard   from './Leaderboard';
 import PointsTable   from './PointsTable';
 import SimulatePanel from './SimulatePanel';
-import OddsHistoryCharts from './OddsHistoryCharts';
 
-type DebugTab = 'matches' | 'points' | 'simulate' | 'trends';
+type DebugTab = 'matches' | 'points' | 'simulate';
 
 // ─── API health panel ─────────────────────────────────────────────────────────
 
@@ -194,7 +193,6 @@ export default function DebugPage() {
     { id: 'matches',  label: '📅 Matches' },
     { id: 'points',   label: '📊 Points' },
     { id: 'simulate', label: '🎲 Simulate' },
-    { id: 'trends',   label: '📈 Trends' },
   ];
 
   return (
@@ -303,17 +301,6 @@ export default function DebugPage() {
           config={EURO_DRAFT_CONFIG}
           byAbbr={EURO_DRAFTER_BY_ABBR}
         />
-      )}
-
-      {/* Trends — live WC 2026 odds history (independent of the Euro data above) */}
-      {tab === 'trends' && (
-        <section className="space-y-2">
-          <p className="text-xs text-slate-500">
-            Live WC 2026 pool &amp; tournament odds, recorded once per day. Independent
-            of the Euro 2024 time-travel data above.
-          </p>
-          <OddsHistoryCharts />
-        </section>
       )}
 
       {!isLoading && !isError && matches.length === 0 && (
