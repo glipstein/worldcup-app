@@ -251,12 +251,13 @@ function runOnceFull(
   bracketIsReal: boolean,
   config: typeof DRAFT_CONFIG,
   byAbbr: Map<string, string>
-): Record<string, number> {
+): { poolPts: Record<string, number>; champion: string | null } {
   const poolPts: Record<string, number> = {};
   config.forEach(d => { poolPts[d.id] = 0; });
 
   if (bracketIsReal) {
     // ── Knockout stage: simulate directly from ESPN schedule ────────────────
+    let champion: string | null = null;
     for (const m of allMatches) {
       if (!m.homeAbbr || !m.awayAbbr) continue;
 
@@ -269,8 +270,15 @@ function runOnceFull(
         const id = byAbbr.get(abbr);
         if (id) poolPts[id] += fastMatchPts(abbr, m.homeAbbr, outcome, m.stage);
       }
+
+      // The FINAL's winner is the tournament champion. (Early in the knockout
+      // rounds ESPN may still list placeholder teams for the FINAL, in which
+      // case champion stays whatever the latest resolved final showed / null.)
+      if (m.stage === 'FINAL' && outcome !== 'draw') {
+        champion = outcome === 'home' ? m.homeAbbr : m.awayAbbr;
+      }
     }
-    return poolPts;
+    return { poolPts, champion };
   }
 
   // ── Group stage: score real results, simulate rest, derive bracket ──────────
@@ -326,7 +334,10 @@ function runOnceFull(
     bracket = winners;
   }
 
-  return poolPts;
+  // After the FINAL the bracket collapses to a single surviving team.
+  const champion = bracket.length === 1 ? bracket[0] : null;
+
+  return { poolPts, champion };
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -443,22 +454,63 @@ export function runMonteCarlo(
   config: typeof DRAFT_CONFIG = DRAFT_CONFIG,
   byAbbr: Map<string, string> = DRAFTER_BY_ABBR
 ): Record<string, number> {
+  return runMonteCarloFull(allMatches, numSims, config, byAbbr).drafters;
+}
+
+/**
+ * Like runMonteCarlo, but also returns each team's probability of winning the
+ * tournament (champion share), derived from the same batch of simulations.
+ *
+ * Returns:
+ *   drafters — { drafterId → P(this drafter wins the pool) }, sums to ~1.0
+ *   teams    — { teamAbbr  → P(this team wins the tournament) }, sums to ~1.0
+ *              across teams that produced a champion in the batch.
+ *
+ * Used by SimulatePanel (drafters only) and scripts/snapshot-odds.ts (both),
+ * which records a daily data point for the trend charts.
+ */
+export function runMonteCarloFull(
+  allMatches: Match[],
+  numSims = 50_000,
+  config: typeof DRAFT_CONFIG = DRAFT_CONFIG,
+  byAbbr: Map<string, string> = DRAFTER_BY_ABBR
+): { drafters: Record<string, number>; teams: Record<string, number> } {
   const groups = buildGroups(allMatches);
   const bracketIsReal = knockoutBracketIsReal(allMatches);
 
   const wins: Record<string, number> = {};
   config.forEach(d => { wins[d.id] = 0; });
 
+  const champWins: Record<string, number> = {};
+  let champTotal = 0;
+
   for (let i = 0; i < numSims; i++) {
-    const pts = runOnceFull(allMatches, groups, bracketIsReal, config, byAbbr);
-    const max = Math.max(...Object.values(pts));
-    const leaders = Object.entries(pts)
+    const { poolPts, champion } = runOnceFull(
+      allMatches, groups, bracketIsReal, config, byAbbr
+    );
+
+    const max = Math.max(...Object.values(poolPts));
+    const leaders = Object.entries(poolPts)
       .filter(([, v]) => v === max)
       .map(([k]) => k);
     for (const id of leaders) wins[id] += 1 / leaders.length;
+
+    if (champion) {
+      champWins[champion] = (champWins[champion] ?? 0) + 1;
+      champTotal += 1;
+    }
   }
 
-  const probs: Record<string, number> = {};
-  config.forEach(d => { probs[d.id] = (wins[d.id] ?? 0) / numSims; });
-  return probs;
+  const drafters: Record<string, number> = {};
+  config.forEach(d => { drafters[d.id] = (wins[d.id] ?? 0) / numSims; });
+
+  // Normalize champion shares over the sims that produced a champion so the
+  // team probabilities sum to 1.0 even if some sims had a placeholder final.
+  const teams: Record<string, number> = {};
+  const denom = champTotal || numSims;
+  for (const [abbr, n] of Object.entries(champWins)) {
+    teams[abbr] = n / denom;
+  }
+
+  return { drafters, teams };
 }

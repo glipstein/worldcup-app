@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview --base /worldcup-app/",
     "deploy": "npm run build && gh-pages -d dist",
-    "test": "vitest run"
+    "test": "vitest run",
+    "snapshot": "tsx scripts/snapshot-odds.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.51.1",
@@ -25,6 +26,7 @@
     "gh-pages": "^6.2.0",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.3",
     "vite": "^5.4.0",
     "vitest": "^4.1.8"
