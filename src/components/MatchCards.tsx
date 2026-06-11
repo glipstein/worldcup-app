@@ -123,6 +123,20 @@ function MatchCard({ match, byAbbr, byId }: MatchCardProps) {
 
 const STATUS_ORDER: Record<string, number> = { live: 0, finished: 1, scheduled: 2 };
 
+/**
+ * Local-timezone calendar day ("YYYY-MM-DD") for an ISO timestamp. Grouping by
+ * this (rather than slicing the UTC string) keeps each card's date label
+ * consistent with its locally-displayed kickoff time — otherwise a late kickoff
+ * that rolls past midnight UTC would show a next-day date beside an evening time.
+ */
+function localDayKey(iso: string): string {
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export default function MatchCards({ matches, config }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -140,11 +154,11 @@ export default function MatchCards({ matches, config }: Props) {
     [config]
   );
 
-  // Group by UTC date, sort within each day by status
+  // Group by local-timezone date, sort within each day by status
   const groups = useMemo(() => {
     const map: Record<string, Match[]> = {};
     for (const m of matches) {
-      const day = m.date.slice(0, 10);
+      const day = localDayKey(m.date);
       (map[day] ??= []).push(m);
     }
     for (const day of Object.keys(map)) {
