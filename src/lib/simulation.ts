@@ -461,7 +461,12 @@ export function runSingleSim(
     bracket = winners;
   }
 
-  return calculateDrafterTotals([...finished, ...simGroupMatches, ...bracketMatches], config);
+  const result = calculateDrafterTotals([...finished, ...simGroupMatches, ...bracketMatches], config);
+  const grandTotal = result.reduce((s, d) => s + d.total, 0);
+  console.debug('[sim] groups:', groups.length, '| qualifiers:', qualifiers.length,
+    '| bracketMatches:', bracketMatches.length, '| grandTotal:', grandTotal,
+    '| bracketIsReal:', knockoutBracketIsReal(allMatches));
+  return result;
 }
 
 /**

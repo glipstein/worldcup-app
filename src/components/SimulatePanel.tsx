@@ -92,6 +92,7 @@ export default function SimulatePanel({ matches, config, byAbbr }: Props) {
       {result?.mode === 'single' && result.drafterTotals && (() => {
         const ranked = [...result.drafterTotals].sort((a, b) => b.total - a.total);
         const winner = ranked[0];
+        const grandTotal = result.drafterTotals.reduce((s, d) => s + d.total, 0);
         return (
           <div className="space-y-4">
             {/* Winner banner */}
@@ -143,6 +144,7 @@ export default function SimulatePanel({ matches, config, byAbbr }: Props) {
             />
             <p className="text-xs text-slate-600 px-1">
               One random outcome weighted by team strengths. Click again for a different draw.
+              {' '}Total pts: <span className={grandTotal === 160 ? 'text-green-600' : 'text-red-400'}>{grandTotal}</span> (expected 160)
             </p>
           </div>
         );
