@@ -120,8 +120,6 @@ function GroupView({ drafters }: { drafters: DrafterTotals[] }) {
 // ── Draft view ────────────────────────────────────────────────────────────────
 
 function DraftView({ drafters }: { drafters: DrafterTotals[] }) {
-  const N = DRAFT_CONFIG.length; // picks per round
-
   const allPicks = drafters
     .flatMap(drafter => drafter.teams.map(team => ({ team, drafter })))
     .sort((a, b) => (PICK_MAP.get(a.team.espnAbbr) ?? 99) - (PICK_MAP.get(b.team.espnAbbr) ?? 99));
@@ -129,21 +127,11 @@ function DraftView({ drafters }: { drafters: DrafterTotals[] }) {
   return (
     <div className="bg-slate-900 rounded-xl overflow-hidden">
       <ul className="divide-y divide-slate-800/60">
-        {allPicks.map(({ team, drafter }, idx) => {
-          const pick  = PICK_MAP.get(team.espnAbbr) ?? 0;
-          const round = Math.ceil(pick / N);
-          const prevPick = idx > 0 ? (PICK_MAP.get(allPicks[idx - 1].team.espnAbbr) ?? 0) : 0;
-          const prevRound = Math.ceil(prevPick / N);
+        {allPicks.map(({ team, drafter }) => {
+          const pick = PICK_MAP.get(team.espnAbbr) ?? 0;
 
           return (
             <Fragment key={team.espnAbbr}>
-              {round !== prevRound && (
-                <li className="px-4 py-1.5 bg-slate-800/50 border-b border-slate-700/50">
-                  <span className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">
-                    Round {round}
-                  </span>
-                </li>
-              )}
               <li
                 className={`flex items-center gap-2.5 pl-3 pr-4 py-2.5 transition-opacity
                             ${team.eliminated ? 'opacity-30' : ''}`}
