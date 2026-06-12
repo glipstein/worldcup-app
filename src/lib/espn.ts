@@ -51,8 +51,9 @@ function mapSlugToStage(slug: string): Stage {
     'quarterfinal':   'QUARTER_FINAL',
     'semifinals':     'SEMI_FINAL',
     'semifinal':      'SEMI_FINAL',
-    'third-place':    'THIRD_PLACE',
-    'final':          'FINAL',
+    'third-place':      'THIRD_PLACE',
+    '3rd-place-match':  'THIRD_PLACE',  // ESPN WC 2026 actual slug
+    'final':            'FINAL',
   };
   return map[slug.toLowerCase()] ?? 'GROUP';
 }
