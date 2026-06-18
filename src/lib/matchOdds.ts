@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-06-18T14:43:45.270Z
+// Last fetched: 2026-06-18T20:09:21.781Z
 // Match markets: 38 / 99
 // Strength calibrations: 48 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,10 +23,10 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 38 markets fetched on 2026-06-18T14:43:45.270Z.
+ * 38 markets fetched on 2026-06-18T20:09:21.781Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
-  ARG_AUT: { pHome: 0.6181, pDraw: 0.2362, pAway: 0.1457 },
+  ARG_AUT: { pHome: 0.6119, pDraw: 0.2338, pAway: 0.1542 },
   AUS_TUR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   AUT_JOR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BEL_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -34,9 +34,9 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   BIH_QAT: { pHome: 0.6119, pDraw: 0.2338, pAway: 0.1542 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  CAN_QAT: { pHome: 0.7512, pDraw: 0.1642, pAway: 0.0846 },
+  CAN_QAT: { pHome: 0.7413, pDraw: 0.1741, pAway: 0.0846 },
   CIV_ECU: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  CZE_RSA: { pHome: 0.5377, pDraw: 0.2663, pAway: 0.1960 },
+  CZE_RSA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ECU_GER: { pHome: 0.1940, pDraw: 0.2338, pAway: 0.5721 },
   ENG_GHA: { pHome: 0.7931, pDraw: 0.1429, pAway: 0.0640 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -51,16 +51,16 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   MAR_HAI: { pHome: 0.7512, pDraw: 0.1642, pAway: 0.0846 },
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  NED_SWE: { pHome: 0.5622, pDraw: 0.2438, pAway: 0.1940 },
+  NED_SWE: { pHome: 0.5578, pDraw: 0.2462, pAway: 0.1960 },
   NOR_FRA: { pHome: 0.2217, pDraw: 0.2414, pAway: 0.5369 },
   PAN_ENG: { pHome: 0.0945, pDraw: 0.1343, pAway: 0.7711 },
   QAT_SUI: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  SCO_BRA: { pHome: 0.1343, pDraw: 0.1741, pAway: 0.6915 },
-  SCO_MAR: { pHome: 0.1741, pDraw: 0.2637, pAway: 0.5622 },
+  SCO_BRA: { pHome: 0.1330, pDraw: 0.1823, pAway: 0.6847 },
+  SCO_MAR: { pHome: 0.1759, pDraw: 0.2663, pAway: 0.5578 },
   SEN_IRQ: { pHome: 0.7186, pDraw: 0.1759, pAway: 0.1055 },
-  SUI_BIH: { pHome: 0.6219, pDraw: 0.2338, pAway: 0.1443 },
+  SUI_BIH: { pHome: 0.5323, pDraw: 0.3333, pAway: 0.1343 },
   SUI_CAN: { pHome: 0.4483, pDraw: 0.2808, pAway: 0.2709 },
-  TUN_JPN: { pHome: 0.1244, pDraw: 0.2338, pAway: 0.6418 },
+  TUN_JPN: { pHome: 0.1343, pDraw: 0.2338, pAway: 0.6318 },
   TUN_NED: { pHome: 0.0955, pDraw: 0.1558, pAway: 0.7487 },
   URU_CPV: { pHome: 0.6617, pDraw: 0.2239, pAway: 0.1144 },
   USA_AUS: { pHome: 0.6080, pDraw: 0.2161, pAway: 0.1759 },
@@ -83,14 +83,14 @@ export const MARKET_STRENGTH: Record<string, number> = {
   BRA: 75,
   GER: 72,
   NED: 64,
-  NOR: 55,
+  NOR: 54,
   MAR: 53,
   USA: 52,
-  BEL: 45,
   COL: 45,
   JPN: 45,
+  BEL: 44,
   MEX: 41,
-  SUI: 31,
+  SUI: 28,
   CRO: 25,
   SEN: 25,
   URU: 25,
@@ -126,4 +126,4 @@ export const MARKET_STRENGTH: Record<string, number> = {
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-18T14:43:45.270Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-18T20:09:21.781Z';
