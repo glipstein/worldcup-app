@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-06-22T20:32:27.427Z
+// Last fetched: 2026-06-23T02:04:48.871Z
 // Match markets: 38 / 99
 // Strength calibrations: 45 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 38 markets fetched on 2026-06-22T20:32:27.427Z.
+ * 38 markets fetched on 2026-06-23T02:04:48.871Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -31,35 +31,35 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   AUT_JOR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BEL_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   BEL_IRN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  BIH_QAT: { pHome: 0.6716, pDraw: 0.1940, pAway: 0.1343 },
+  BIH_QAT: { pHome: 0.6816, pDraw: 0.1940, pAway: 0.1244 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   CIV_ECU: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   CZE_RSA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  ECU_GER: { pHome: 0.2563, pDraw: 0.2362, pAway: 0.5075 },
+  ECU_GER: { pHome: 0.2537, pDraw: 0.2338, pAway: 0.5124 },
   ENG_GHA: { pHome: 0.8010, pDraw: 0.1343, pAway: 0.0647 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  FRA_IRQ: { pHome: 0.9145, pDraw: 0.0650, pAway: 0.0205 },
+  FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_SEN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   GER_CIV: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   GHA_PAN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   IRQ_NOR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   JPN_SWE: { pHome: 0.5124, pDraw: 0.2736, pAway: 0.2139 },
   KSA_URU: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  MAR_HAI: { pHome: 0.8209, pDraw: 0.1244, pAway: 0.0547 },
+  MAR_HAI: { pHome: 0.8291, pDraw: 0.1256, pAway: 0.0452 },
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  NOR_FRA: { pHome: 0.2139, pDraw: 0.2338, pAway: 0.5522 },
+  NOR_FRA: { pHome: 0.2098, pDraw: 0.2293, pAway: 0.5610 },
   PAN_ENG: { pHome: 0.0846, pDraw: 0.1244, pAway: 0.7910 },
   QAT_SUI: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  SCO_BRA: { pHome: 0.1133, pDraw: 0.1823, pAway: 0.7044 },
+  SCO_BRA: { pHome: 0.1045, pDraw: 0.1841, pAway: 0.7114 },
   SCO_MAR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
-  SEN_IRQ: { pHome: 0.7512, pDraw: 0.1642, pAway: 0.0846 },
+  SEN_IRQ: { pHome: 0.7711, pDraw: 0.1542, pAway: 0.0746 },
   SUI_BIH: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  SUI_CAN: { pHome: 0.3930, pDraw: 0.3134, pAway: 0.2935 },
+  SUI_CAN: { pHome: 0.4030, pDraw: 0.3134, pAway: 0.2836 },
   TUN_JPN: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   TUN_NED: { pHome: 0.0372, pDraw: 0.0943, pAway: 0.8685 },
   URU_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -81,20 +81,19 @@ export const MARKET_STRENGTH: Record<string, number> = {
   ENG: 89,
   POR: 76,
   GER: 72,
-  BRA: 71,
-  NED: 71,
+  NED: 70,
+  BRA: 69,
   USA: 62,
-  NOR: 52,
-  JPN: 51,
+  NOR: 56,
   MAR: 50,
+  JPN: 49,
   COL: 44,
   MEX: 39,
-  BEL: 35,
+  BEL: 37,
   SUI: 25,
-  CRO: 21,
-  SEN: 21,
-  CIV: 17,
+  CRO: 17,
   CAN: 11,
+  CIV: 11,
   ALG: 10,
   AUS: 10,
   AUT: 10,
@@ -117,10 +116,11 @@ export const MARKET_STRENGTH: Record<string, number> = {
   QAT: 10,
   RSA: 10,
   SCO: 10,
+  SEN: 10,
   SWE: 10,
   URU: 10,
   UZB: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-22T20:32:27.427Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-23T02:04:48.871Z';
