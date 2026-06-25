@@ -136,6 +136,29 @@ const STAGE_LABELS: Partial<Record<Stage, string>> = {
   THIRD_PLACE:   '3rd Place',
 };
 
+// Card height (px) used for bracket alignment math. Both BracketMatchCard and
+// TBDMatchCard are rendered at exactly this height (overflow-hidden clips excess)
+// so every round's cards are uniform and the centering formula stays accurate.
+const CARD_H_PX = 88;
+const BASE_GAP_PX = 8;
+
+// For round index n (0=R32, 1=R16, 2=QF, …):
+//   paddingTop = (2^n − 1) × U / 2   where U = CARD_H + BASE_GAP
+//   gap        = 2^n × U − CARD_H
+// This centers each card between the two feeder cards from the prior round.
+const KO_ROUND_ORDER: Stage[] = ['ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'FINAL'];
+
+function roundAlignStyle(stage: Stage): React.CSSProperties {
+  const n = KO_ROUND_ORDER.indexOf(stage);
+  const U = CARD_H_PX + BASE_GAP_PX;
+  if (n < 0) return { gap: `${BASE_GAP_PX}px` };           // THIRD_PLACE etc.
+  const scale = 1 << n;                                     // 2^n
+  return {
+    paddingTop: n > 0 ? `${(scale - 1) * U / 2}px` : undefined,
+    gap: `${scale * U - CARD_H_PX}px`,
+  };
+}
+
 const STAGE_MATCH_COUNT: Partial<Record<Stage, number>> = {
   ROUND_OF_32:   16,
   ROUND_OF_16:   8,
@@ -199,8 +222,9 @@ function BracketMatchCard({ match }: { match: Match }) {
   const showScore = (isFinished || isLive) && match.homeScore !== null && match.awayScore !== null;
 
   return (
-    <div className={`rounded-lg border overflow-hidden
+    <div className={`rounded-lg border overflow-hidden shrink-0
       ${isLive ? 'border-green-500/60' : 'border-slate-700'} bg-slate-900`}
+         style={{ height: `${CARD_H_PX}px` }}
     >
       {/* Status header */}
       <div className="flex items-center px-2 py-0.5 bg-slate-800/80 text-[10px]">
@@ -241,7 +265,8 @@ function BracketMatchCard({ match }: { match: Match }) {
 
 function TBDMatchCard() {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/40 overflow-hidden">
+    <div className="rounded-lg border border-slate-800 bg-slate-900/40 overflow-hidden shrink-0"
+         style={{ height: `${CARD_H_PX}px` }}>
       <div className="px-2 py-0.5 bg-slate-800/30 text-[10px] text-slate-700">TBD</div>
       <div className="flex items-center gap-1.5 px-2 py-1.5">
         <div className="w-5 h-3.5 rounded-sm bg-slate-800/60 shrink-0" />
@@ -264,8 +289,8 @@ function RoundColumn({ stage, matches }: { stage: Stage; matches: Match[] }) {
   const tbdCount = Math.max(0, expected - matches.length);
 
   return (
-    <div className="flex flex-col gap-2 w-40 shrink-0">
-      <div className="text-center pb-1">
+    <div className="flex flex-col w-40 shrink-0">
+      <div className="text-center pb-2">
         <div className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">
           {STAGE_LABELS[stage]}
         </div>
@@ -273,7 +298,7 @@ function RoundColumn({ stage, matches }: { stage: Stage; matches: Match[] }) {
           {done}/{expected} complete
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col" style={roundAlignStyle(stage)}>
         {matches.map(m => <BracketMatchCard key={m.id} match={m} />)}
         {Array.from({ length: tbdCount }, (_, i) => <TBDMatchCard key={`tbd-${i}`} />)}
       </div>
