@@ -9,16 +9,18 @@ import RosterCards   from './components/RosterCards';
 import WorldMap      from './components/WorldMap';
 import SimulatePanel from './components/SimulatePanel';
 import OddsHistoryCharts from './components/OddsHistoryCharts';
+import BracketTab    from './components/BracketTab';
 import DebugPage     from './components/DebugPage';
 
 // Show the debug tab when ?debug or ?debug=1 is in the URL
 const IS_DEBUG = new URLSearchParams(window.location.search).has('debug');
 
-type Tab = 'overview' | 'roster' | 'odds' | 'debug';
+type Tab = 'overview' | 'roster' | 'bracket' | 'odds' | 'debug';
 
 const TABS: { id: Tab; label: string; emoji: string }[] = [
   { id: 'overview',  label: 'Overview',  emoji: '📊' },
   { id: 'roster',    label: 'Roster',    emoji: '👥' },
+  { id: 'bracket',   label: 'Bracket',   emoji: '🏆' },
   { id: 'odds',      label: 'Odds',      emoji: '📈' },
   ...(IS_DEBUG ? [{ id: 'debug' as Tab, label: 'Debug', emoji: '🔧' }] : []),
 ];
@@ -123,6 +125,11 @@ export default function App() {
               </section>
             )}
           </>
+        )}
+
+        {/* ── Bracket tab ── */}
+        {!isLoading && tab === 'bracket' && matches && (
+          <BracketTab matches={matches} />
         )}
 
         {/* ── Roster & Map tab ── */}
