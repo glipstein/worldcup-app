@@ -136,6 +136,15 @@ const STAGE_LABELS: Partial<Record<Stage, string>> = {
   THIRD_PLACE:   '3rd Place',
 };
 
+const STAGE_MATCH_COUNT: Partial<Record<Stage, number>> = {
+  ROUND_OF_32:   16,
+  ROUND_OF_16:   8,
+  QUARTER_FINAL: 4,
+  SEMI_FINAL:    2,
+  FINAL:         1,
+  THIRD_PLACE:   1,
+};
+
 interface TeamSlotProps {
   abbr: string;
   score: number | null;
@@ -228,22 +237,45 @@ function BracketMatchCard({ match }: { match: Match }) {
   );
 }
 
+// ─── TBD placeholder card ─────────────────────────────────────────────────────
+
+function TBDMatchCard() {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900/40 overflow-hidden">
+      <div className="px-2 py-0.5 bg-slate-800/30 text-[10px] text-slate-700">TBD</div>
+      <div className="flex items-center gap-1.5 px-2 py-1.5">
+        <div className="w-5 h-3.5 rounded-sm bg-slate-800/60 shrink-0" />
+        <span className="text-[11px] text-slate-700 font-semibold">—</span>
+      </div>
+      <div className="h-px bg-slate-800/50 mx-2" />
+      <div className="flex items-center gap-1.5 px-2 py-1.5">
+        <div className="w-5 h-3.5 rounded-sm bg-slate-800/60 shrink-0" />
+        <span className="text-[11px] text-slate-700 font-semibold">—</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Round column ─────────────────────────────────────────────────────────────
 
 function RoundColumn({ stage, matches }: { stage: Stage; matches: Match[] }) {
   const done = matches.filter(m => m.status === 'finished').length;
+  const expected = STAGE_MATCH_COUNT[stage] ?? matches.length;
+  const tbdCount = Math.max(0, expected - matches.length);
+
   return (
-    <div className="flex flex-col gap-2 w-44 shrink-0">
+    <div className="flex flex-col gap-2 w-40 shrink-0">
       <div className="text-center pb-1">
         <div className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">
           {STAGE_LABELS[stage]}
         </div>
         <div className="text-[9px] text-slate-500">
-          {done}/{matches.length} complete
+          {done}/{expected} complete
         </div>
       </div>
       <div className="flex flex-col gap-2">
         {matches.map(m => <BracketMatchCard key={m.id} match={m} />)}
+        {Array.from({ length: tbdCount }, (_, i) => <TBDMatchCard key={`tbd-${i}`} />)}
       </div>
     </div>
   );
@@ -267,11 +299,11 @@ function GroupTable({
           <tr className="text-slate-600 border-b border-slate-800">
             <th className="text-left pl-2 pr-1 py-1 font-normal">#</th>
             <th className="text-left px-1 py-1 font-normal">Team</th>
-            <th className="px-1 py-1 text-center font-normal">P</th>
-            <th className="px-1 py-1 text-center font-normal">W</th>
-            <th className="px-1 py-1 text-center font-normal">D</th>
-            <th className="px-1 py-1 text-center font-normal">L</th>
-            <th className="px-1 py-1 text-center font-normal">GD</th>
+            <th className="hidden sm:table-cell px-1 py-1 text-center font-normal">P</th>
+            <th className="hidden sm:table-cell px-1 py-1 text-center font-normal">W</th>
+            <th className="hidden sm:table-cell px-1 py-1 text-center font-normal">D</th>
+            <th className="hidden sm:table-cell px-1 py-1 text-center font-normal">L</th>
+            <th className="hidden sm:table-cell px-1 py-1 text-center font-normal">GD</th>
             <th className="px-1 py-1 text-center font-semibold text-slate-400">Pts</th>
           </tr>
         </thead>
@@ -311,15 +343,15 @@ function GroupTable({
                     </div>
                   </div>
                 </td>
-                <td className={`px-1 py-1.5 text-center tabular-nums
+                <td className={`hidden sm:table-cell px-1 py-1.5 text-center tabular-nums
                   ${eliminated || thirdElim ? 'text-slate-600' : 'text-slate-400'}`}>{t.played}</td>
-                <td className={`px-1 py-1.5 text-center tabular-nums
+                <td className={`hidden sm:table-cell px-1 py-1.5 text-center tabular-nums
                   ${eliminated || thirdElim ? 'text-slate-600' : 'text-slate-400'}`}>{t.won}</td>
-                <td className={`px-1 py-1.5 text-center tabular-nums
+                <td className={`hidden sm:table-cell px-1 py-1.5 text-center tabular-nums
                   ${eliminated || thirdElim ? 'text-slate-600' : 'text-slate-400'}`}>{t.drawn}</td>
-                <td className={`px-1 py-1.5 text-center tabular-nums
+                <td className={`hidden sm:table-cell px-1 py-1.5 text-center tabular-nums
                   ${eliminated || thirdElim ? 'text-slate-600' : 'text-slate-400'}`}>{t.lost}</td>
-                <td className={`px-1 py-1.5 text-center tabular-nums
+                <td className={`hidden sm:table-cell px-1 py-1.5 text-center tabular-nums
                   ${eliminated || thirdElim ? 'text-slate-600' : 'text-slate-400'}`}>
                   {t.gf - t.ga > 0 ? '+' : ''}{t.gf - t.ga}
                 </td>
@@ -360,7 +392,6 @@ export default function BracketTab({ matches }: Props) {
   const groupStandings = useMemo(() => computeGroupStandings(matches), [matches]);
   const advancingThird = useMemo(() => advancingThirdPlaceSet(groupStandings), [groupStandings]);
 
-  const hasKO = KO_STAGES.some(s => (koByStage.get(s)?.length ?? 0) > 0);
   const thirdPlaceMatches = koByStage.get('THIRD_PLACE') ?? [];
 
   // How many groups have all 3 games done — for the 3rd-place advancing legend note
@@ -377,33 +408,19 @@ export default function BracketTab({ matches }: Props) {
           Knockout Bracket
         </h2>
 
-        {!hasKO ? (
-          <div className="bg-slate-900 rounded-xl border border-slate-800 p-8 text-center">
-            <p className="text-slate-400 text-sm font-medium mb-1">
-              Bracket not yet available
-            </p>
-            <p className="text-slate-500 text-xs">
-              Knockout matches will appear as the group stage concludes.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto pb-2 -mx-1 px-1">
-            <div className="flex gap-5 min-w-max">
-              {KO_STAGES.map(stage => {
-                const ms = koByStage.get(stage) ?? [];
-                return ms.length > 0
-                  ? <RoundColumn key={stage} stage={stage} matches={ms} />
-                  : null;
-              })}
-              {thirdPlaceMatches.length > 0 && (
+        <div className="overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="flex gap-4 min-w-max">
+            {KO_STAGES.map(stage => (
+              <RoundColumn key={stage} stage={stage} matches={koByStage.get(stage) ?? []} />
+            ))}
+            {thirdPlaceMatches.length > 0 && (
+              <>
                 <div className="w-px bg-slate-800 self-stretch" />
-              )}
-              {thirdPlaceMatches.length > 0 && (
                 <RoundColumn stage="THIRD_PLACE" matches={thirdPlaceMatches} />
-              )}
-            </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </section>
 
       {/* ── Group stage tables ── */}
