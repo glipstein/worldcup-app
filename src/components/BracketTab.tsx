@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Match, Stage } from '../lib/types';
-import { DRAFT_CONFIG, DRAFTER_BY_ABBR, DRAFTER_BY_ID } from '../config/draft';
+import { DRAFTER_BY_ABBR, DRAFTER_BY_ID } from '../config/draft';
 import type { DrafterConfig } from '../config/draft';
 import Flag from './Flag';
 
