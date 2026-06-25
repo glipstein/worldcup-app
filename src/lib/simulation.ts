@@ -168,13 +168,19 @@ function fastMatchPts(
 // ─── Shared detection: is the knockout bracket real yet? ─────────────────────
 
 /**
- * Returns true once ESPN has knockout matches with known (non-placeholder) teams.
- * ESPN pre-schedules the full bracket from day one using placeholder abbreviations
- * (e.g. "TBD"). We ignore those by requiring both teams to be in TEAM_STRENGTH.
+ * Returns true once ESPN has Round-of-16 or later matches with known teams.
+ *
+ * We wait for R16 rather than R32 because ESPN populates R32 fixtures one at a
+ * time as group stage wraps up.  During that window we'd have only group-stage +
+ * a handful of R32 matches — the bracketIsReal path would score those and stop,
+ * completely omitting R16 through the Final and producing wildly skewed odds.
+ *
+ * Once R16 fixtures appear we can trust that the full R32 bracket is settled and
+ * the bracketIsReal path will cover enough rounds to be meaningful.
  */
 function knockoutBracketIsReal(allMatches: Match[]): boolean {
   return allMatches.some(
-    m => m.stage !== 'GROUP' && m.stage !== 'THIRD_PLACE'
+    m => m.stage !== 'GROUP' && m.stage !== 'THIRD_PLACE' && m.stage !== 'ROUND_OF_32'
       && (m.homeAbbr in TEAM_STRENGTH)
       && (m.awayAbbr in TEAM_STRENGTH)
   );

@@ -136,13 +136,17 @@ export async function fetchMatches(base: string, chunks: string[]): Promise<Matc
     })
   );
 
+  // Real country codes never contain digits; ESPN bracket placeholders (SFW1, RW14, GBW1)
+  // always do. Filter these out so unresolved bracket slots don't corrupt simulation results.
+  const isRealAbbr = (abbr: string): boolean => !/\d/.test(abbr);
+
   const seen = new Set<string>();
   const matches: Match[] = [];
   for (const event of allEvents.flat()) {
     if (seen.has(event.id)) continue;
     seen.add(event.id);
     const match = parseEvent(event);
-    if (match) matches.push(match);
+    if (match && isRealAbbr(match.homeAbbr) && isRealAbbr(match.awayAbbr)) matches.push(match);
   }
   matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   return matches;

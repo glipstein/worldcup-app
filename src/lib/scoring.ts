@@ -65,7 +65,33 @@ function buildTeamRow(
 
   const allGroupDone = groupMatches.filter(m => m.status === 'finished').length === 3;
   const inKnockout   = teamMatches.some(m => m.stage !== 'GROUP' && m.stage !== 'THIRD_PLACE');
-  const eliminated   = allGroupDone && !inKnockout;
+
+  // In WC 2026 the best 8 third-place teams advance, so a 3rd-place finish is NOT
+  // an automatic elimination. Only 4th-place finishers are definitively out.
+  // Compute group finish position from soccer points so we can distinguish 3rd from 4th.
+  let finishPos: number | null = null;
+  if (allGroupDone && !inKnockout) {
+    const groupTeams = new Set<string>([espnAbbr]);
+    for (const m of groupMatches) {
+      groupTeams.add(m.homeAbbr);
+      groupTeams.add(m.awayAbbr);
+    }
+    const soccerPts: Record<string, number> = {};
+    for (const t of groupTeams) soccerPts[t] = 0;
+    for (const m of allMatches) {
+      if (m.stage !== 'GROUP' || m.status !== 'finished' || !m.winner) continue;
+      if (!groupTeams.has(m.homeAbbr) || !groupTeams.has(m.awayAbbr)) continue;
+      if (m.winner === 'home') soccerPts[m.homeAbbr] += 3;
+      else if (m.winner === 'away') soccerPts[m.awayAbbr] += 3;
+      else { soccerPts[m.homeAbbr]++; soccerPts[m.awayAbbr]++; }
+    }
+    const sorted = [...groupTeams].sort((a, b) => (soccerPts[b] ?? 0) - (soccerPts[a] ?? 0));
+    finishPos = sorted.indexOf(espnAbbr) + 1;
+  }
+
+  // Only mark eliminated if definitely 4th in the group — 3rd-place teams may still
+  // qualify via the best-8 rule and should not be crossed out until confirmed.
+  const eliminated = allGroupDone && !inKnockout && finishPos === 4;
 
   const total = ([...groupGames, roundOf32, roundOf16, quarterFinal, semiFinal, final] as (number | null)[])
     .reduce<number>((sum, v) => sum + (v ?? 0), 0);
