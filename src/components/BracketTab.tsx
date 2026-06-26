@@ -168,6 +168,30 @@ const STAGE_MATCH_COUNT: Partial<Record<Stage, number>> = {
   THIRD_PLACE:   1,
 };
 
+// ESPN event IDs in correct bracket display order (top → bottom).
+// Derived from the ESPN WC 2026 bracket structure (FIFA draw seeding).
+// Pairs that are adjacent feed into the same match in the next round.
+const BRACKET_ORDER: Partial<Record<Stage, string[]>> = {
+  ROUND_OF_32: [
+    '760486', '760488',  // → R16-1
+    '760487', '760490',  // → R16-2
+    '760496', '760497',  // → R16-5
+    '760494', '760495',  // → R16-6
+    '760489', '760491',  // → R16-3
+    '760492', '760493',  // → R16-4
+    '760498', '760500',  // → R16-7
+    '760499', '760501',  // → R16-8
+  ],
+  ROUND_OF_16: [
+    '760502', '760503',  // → QF-1
+    '760506', '760507',  // → QF-2
+    '760504', '760505',  // → QF-3
+    '760508', '760509',  // → QF-4
+  ],
+  QUARTER_FINAL: ['760510', '760511', '760512', '760513'],
+  SEMI_FINAL:    ['760514', '760515'],
+};
+
 interface TeamSlotProps {
   abbr: string;
   score: number | null;
@@ -286,7 +310,20 @@ function TBDMatchCard() {
 function RoundColumn({ stage, matches }: { stage: Stage; matches: Match[] }) {
   const done = matches.filter(m => m.status === 'finished').length;
   const expected = STAGE_MATCH_COUNT[stage] ?? matches.length;
-  const tbdCount = Math.max(0, expected - matches.length);
+  const order = BRACKET_ORDER[stage];
+
+  // Build lookup by ESPN event ID for ordered rendering.
+  const byId = new Map(matches.map(m => [m.id, m]));
+
+  // For stages with a defined bracket order, render slots in that order
+  // (real card if match exists, TBD otherwise). For other stages (THIRD_PLACE,
+  // FINAL with no order), fall back to matches + trailing TBD padding.
+  const slots: Array<Match | null> = order
+    ? order.map(id => byId.get(id) ?? null)
+    : [
+        ...matches,
+        ...Array.from({ length: Math.max(0, expected - matches.length) }, () => null),
+      ];
 
   return (
     <div className="flex flex-col w-40 shrink-0">
@@ -299,8 +336,9 @@ function RoundColumn({ stage, matches }: { stage: Stage; matches: Match[] }) {
         </div>
       </div>
       <div className="flex flex-col" style={roundAlignStyle(stage)}>
-        {matches.map(m => <BracketMatchCard key={m.id} match={m} />)}
-        {Array.from({ length: tbdCount }, (_, i) => <TBDMatchCard key={`tbd-${i}`} />)}
+        {slots.map((m, i) =>
+          m ? <BracketMatchCard key={m.id} match={m} /> : <TBDMatchCard key={`tbd-${i}`} />
+        )}
       </div>
     </div>
   );
