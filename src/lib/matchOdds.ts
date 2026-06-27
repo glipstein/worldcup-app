@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-06-27T02:03:27.282Z
+// Last fetched: 2026-06-27T08:25:18.730Z
 // Match markets: 40 / 99
-// Strength calibrations: 39 teams
+// Strength calibrations: 37 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 40 markets fetched on 2026-06-27T02:03:27.282Z.
+ * 40 markets fetched on 2026-06-27T08:25:18.730Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -32,7 +32,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   BEL_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   BEL_IRN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   BIH_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  BRA_JPN: { pHome: 0.5721, pDraw: 0.2537, pAway: 0.1741 },
+  BRA_JPN: { pHome: 0.5779, pDraw: 0.2462, pAway: 0.1759 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -54,7 +54,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NOR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
-  PAN_ENG: { pHome: 0.0647, pDraw: 0.1144, pAway: 0.8209 },
+  PAN_ENG: { pHome: 0.0547, pDraw: 0.1045, pAway: 0.8408 },
   QAT_SUI: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   RSA_CAN: { pHome: 0.1658, pDraw: 0.2663, pAway: 0.5678 },
   SCO_BRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -73,24 +73,24 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 39 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 37 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 93,
-  ESP: 90,
+  ARG: 96,
+  ESP: 89,
   ENG: 85,
   POR: 79,
   BRA: 72,
-  NED: 72,
   GER: 67,
-  USA: 56,
+  NED: 67,
   NOR: 54,
-  JPN: 45,
+  USA: 54,
+  JPN: 44,
   COL: 42,
   MAR: 42,
-  BEL: 39,
+  BEL: 41,
   MEX: 39,
   SUI: 33,
   ECU: 25,
@@ -108,15 +108,13 @@ export const MARKET_STRENGTH: Record<string, number> = {
   GHA: 10,
   IRN: 10,
   KOR: 10,
-  KSA: 10,
   NZL: 10,
   PAR: 10,
   RSA: 10,
   SCO: 10,
   SWE: 10,
-  URU: 10,
   UZB: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-27T02:03:27.282Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-27T08:25:18.730Z';
