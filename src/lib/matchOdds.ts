@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-06-26T19:27:37.562Z
+// Last fetched: 2026-06-27T02:03:27.282Z
 // Match markets: 40 / 99
-// Strength calibrations: 40 teams
+// Strength calibrations: 39 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 40 markets fetched on 2026-06-26T19:27:37.562Z.
+ * 40 markets fetched on 2026-06-27T02:03:27.282Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -32,7 +32,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   BEL_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   BEL_IRN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   BIH_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  BRA_JPN: { pHome: 0.5665, pDraw: 0.2512, pAway: 0.1823 },
+  BRA_JPN: { pHome: 0.5721, pDraw: 0.2537, pAway: 0.1741 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -53,13 +53,13 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  NOR_FRA: { pHome: 0.0328, pDraw: 0.0726, pAway: 0.8946 },
-  PAN_ENG: { pHome: 0.0452, pDraw: 0.1055, pAway: 0.8492 },
+  NOR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
+  PAN_ENG: { pHome: 0.0647, pDraw: 0.1144, pAway: 0.8209 },
   QAT_SUI: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   RSA_CAN: { pHome: 0.1658, pDraw: 0.2663, pAway: 0.5678 },
   SCO_BRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   SCO_MAR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
-  SEN_IRQ: { pHome: 0.9711, pDraw: 0.0219, pAway: 0.0070 },
+  SEN_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   SUI_BIH: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   SUI_CAN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   TUN_JPN: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -73,23 +73,23 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 40 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 39 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
-  FRA: 99,
+  FRA: 100,
   ARG: 93,
-  ESP: 91,
-  ENG: 84,
-  POR: 80,
+  ESP: 90,
+  ENG: 85,
+  POR: 79,
+  BRA: 72,
   NED: 72,
-  BRA: 71,
   GER: 67,
-  USA: 58,
-  NOR: 55,
+  USA: 56,
+  NOR: 54,
   JPN: 45,
-  COL: 44,
-  MAR: 44,
+  COL: 42,
+  MAR: 42,
   BEL: 39,
   MEX: 39,
   SUI: 33,
@@ -107,7 +107,6 @@ export const MARKET_STRENGTH: Record<string, number> = {
   EGY: 10,
   GHA: 10,
   IRN: 10,
-  IRQ: 10,
   KOR: 10,
   KSA: 10,
   NZL: 10,
@@ -120,4 +119,4 @@ export const MARKET_STRENGTH: Record<string, number> = {
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-06-26T19:27:37.562Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-06-27T02:03:27.282Z';
