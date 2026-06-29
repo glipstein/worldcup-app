@@ -8,68 +8,68 @@
 
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
-  ARG: 95,  // Argentina — defending champions
-  FRA: 86,  // France
-  ENG: 77,  // England
-  BRA: 77,  // Brazil
-  ESP: 100,  // Spain
-  GER: 70,  // Germany
-  POR: 79,  // Portugal
-  NED: 68,  // Netherlands
-  MAR: 68,  // Morocco
-  BEL: 59,  // Belgium
-  URU: 66,  // Uruguay
-  USA: 58,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
-  COL: 75,  // Colombia
+  ARG: 100,  // Argentina — defending champions
+  FRA: 94,  // France
+  ENG: 80,  // England
+  BRA: 80,  // Brazil
+  ESP: 99,  // Spain
+  GER: 68,  // Germany
+  POR: 78,  // Portugal
+  NED: 74,  // Netherlands
+  MAR: 74,  // Morocco
+  BEL: 60,  // Belgium
+  URU: 58,  // Uruguay
+  USA: 47,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
+  COL: 79,  // Colombia
   JPN: 68,  // Japan
-  CRO: 66,  // Croatia
-  SUI: 59,  // Switzerland
-  SEN: 59,  // Senegal
-  MEX: 69,  // Mexico (host nation boost included)
-  ECU: 74,  // Ecuador
-  NOR: 60,  // Norway
+  CRO: 67,  // Croatia
+  SUI: 64,  // Switzerland
+  SEN: 55,  // Senegal
+  MEX: 74,  // Mexico (host nation boost included)
+  ECU: 68,  // Ecuador
+  NOR: 65,  // Norway
 
   // ── Picks 21–48 ──────────────────────────────────────────────────────────────
-  CIV: 42,  // Ivory Coast
-  TUR: 67,  // Turkey
-  AUT: 52,  // Austria
-  CAN: 54,  // Canada (host nation boost included)
-  KOR: 54,  // South Korea
-  SWE: 37,  // Sweden
-  CZE: 40,  // Czechia
-  EGY: 42,  // Egypt
-  SCO: 47,  // Scotland
-  PAR: 59,  // Paraguay
-  AUS: 56,  // Australia
-  ALG: 54,  // Algeria
-  GHA: 15,  // Ghana
-  BIH: 19,  // Bosnia & Herzegovina
-  IRN: 55,  // Iran
-  TUN: 33,  // Tunisia
-  COD: 36,  // DR Congo
-  KSA: 27,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
-  UZB: 46,  // Uzbekistan
-  RSA: 21,  // South Africa
-  PAN: 51,  // Panama
-  CPV: 22,  // Cape Verde
-  JOR: 38,  // Jordan
-  IRQ: 38,  // Iraq
-  NZL: 28,  // New Zealand
-  HAI: 29,  // Haiti
+  CIV: 49,  // Ivory Coast
+  TUR: 62,  // Turkey
+  AUT: 54,  // Austria
+  CAN: 46,  // Canada (host nation boost included)
+  KOR: 47,  // South Korea
+  SWE: 42,  // Sweden
+  CZE: 34,  // Czechia
+  EGY: 48,  // Egypt
+  SCO: 44,  // Scotland
+  PAR: 60,  // Paraguay
+  AUS: 57,  // Australia
+  ALG: 56,  // Algeria
+  GHA: 25,  // Ghana
+  BIH: 24,  // Bosnia & Herzegovina
+  IRN: 53,  // Iran
+  TUN: 25,  // Tunisia
+  COD: 41,  // DR Congo
+  KSA: 30,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
+  UZB: 35,  // Uzbekistan
+  RSA: 29,  // South Africa
+  PAN: 38,  // Panama
+  CPV: 29,  // Cape Verde
+  JOR: 30,  // Jordan
+  IRQ: 29,  // Iraq
+  NZL: 24,  // New Zealand
+  HAI: 22,  // Haiti
   CUW: 11,  // Curaçao
-  QAT: 11,  // Qatar
+  QAT: 9,  // Qatar
 
   // ── Undrafted — still needed for full bracket simulation ─────────────────────
-  SAU: 27,  // Saudi Arabia alias (ESPN sometimes uses SAU)
+  SAU: 30,  // Saudi Arabia alias (ESPN sometimes uses SAU)
   ITA: 64,  // Italy
   DEN: 58,  // Denmark
   GEO: 24,  // Georgia
   POL: 36, UKR: 50, ROU: 27, SVK: 28, HUN: 39,
   SRB: 42, ALB: 20, SVN: 36, GRE: 42,
   IDN: 0,
-  NGA: 49, CMR: 30, MLI: 28, ANG: 8, TAN: 0,
+  NGA: 48, CMR: 30, MLI: 28, ANG: 9, TAN: 0,
   HON: 31, JAM: 24, SLV: 0,
-  VEN: 43, CHI: 38, BOL: 30, PER: 37,
+  VEN: 45, CHI: 40, BOL: 29, PER: 37,
 };
 
 export function getStrength(abbr: string): number {
