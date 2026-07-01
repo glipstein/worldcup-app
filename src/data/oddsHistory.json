@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-01T09:27:25.172Z",
+  "updatedAt": "2026-07-01T14:04:26.868Z",
   "numSims": 200000,
   "history": [
     {
@@ -1139,10 +1139,10 @@
     {
       "date": "2026-07-01",
       "drafters": {
-        "pederson": 0.4569,
-        "barber": 0.1825,
-        "lipstein": 0.0609,
-        "martin": 0.2997
+        "pederson": 0.4467,
+        "barber": 0.1989,
+        "lipstein": 0.0369,
+        "martin": 0.3175
       },
       "teams": {}
     }
