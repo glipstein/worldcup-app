@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-01T02:13:52.075Z
+// Last fetched: 2026-07-01T09:27:24.730Z
 // Match markets: 48 / 99
-// Strength calibrations: 26 teams
+// Strength calibrations: 25 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,11 +23,11 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 48 markets fetched on 2026-07-01T02:13:52.075Z.
+ * 48 markets fetched on 2026-07-01T09:27:24.730Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  ARG_CPV: { pHome: 0.8395, pDraw: 0.1143, pAway: 0.0462 },
+  ARG_CPV: { pHome: 0.8421, pDraw: 0.1146, pAway: 0.0433 },
   AUS_EGY: { pHome: 0.2836, pDraw: 0.3333, pAway: 0.3831 },
   AUS_TUR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   AUT_JOR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -81,25 +81,25 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 26 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 25 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 97,
-  ENG: 84,
-  ESP: 84,
+  ARG: 98,
+  ESP: 85,
+  ENG: 83,
   BRA: 75,
-  POR: 71,
-  MAR: 59,
-  USA: 58,
+  POR: 74,
   COL: 56,
-  MEX: 49,
-  NOR: 49,
+  MEX: 54,
+  USA: 54,
+  MAR: 53,
+  NOR: 46,
   BEL: 37,
   SUI: 31,
   SEN: 21,
-  CRO: 17,
+  CRO: 11,
   ALG: 10,
   AUS: 10,
   AUT: 10,
@@ -107,11 +107,10 @@ export const MARKET_STRENGTH: Record<string, number> = {
   CAN: 10,
   COD: 10,
   CPV: 10,
-  ECU: 10,
   EGY: 10,
   GHA: 10,
   PAR: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-01T02:13:52.075Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-01T09:27:24.730Z';
