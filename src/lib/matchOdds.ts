@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-03T13:39:26.793Z
+// Last fetched: 2026-07-03T18:59:46.521Z
 // Match markets: 50 / 99
 // Strength calibrations: 19 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,12 +23,12 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 50 markets fetched on 2026-07-03T13:39:26.793Z.
+ * 50 markets fetched on 2026-07-03T18:59:46.521Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ARG_CPV: { pHome: 0.8571, pDraw: 0.1053, pAway: 0.0376 },
-  AUS_EGY: { pHome: 0.2637, pDraw: 0.3333, pAway: 0.4030 },
+  AUS_EGY: { pHome: 0.0754, pDraw: 0.2563, pAway: 0.6683 },
   AUS_TUR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   AUT_JOR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BEL_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -37,9 +37,9 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   BIH_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BRA_JPN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  BRA_NOR: { pHome: 0.5224, pDraw: 0.2637, pAway: 0.2139 },
+  BRA_NOR: { pHome: 0.5323, pDraw: 0.2637, pAway: 0.2040 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  CAN_MAR: { pHome: 0.1759, pDraw: 0.2764, pAway: 0.5477 },
+  CAN_MAR: { pHome: 0.1859, pDraw: 0.2764, pAway: 0.5377 },
   CAN_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   CIV_ECU: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   CIV_NOR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -88,15 +88,15 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 99,
+  ARG: 98,
   ESP: 90,
   ENG: 77,
-  BRA: 74,
+  BRA: 76,
   POR: 73,
-  MEX: 59,
-  COL: 54,
+  MEX: 58,
   MAR: 54,
   USA: 54,
+  COL: 53,
   NOR: 47,
   BEL: 39,
   SUI: 31,
@@ -109,4 +109,4 @@ export const MARKET_STRENGTH: Record<string, number> = {
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-03T13:39:26.793Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-03T18:59:46.521Z';
