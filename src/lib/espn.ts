@@ -85,6 +85,9 @@ function parseEvent(event: EspnEvent): Match | null {
   if (status === 'finished' && homeScore !== null && awayScore !== null) {
     if (homeScore > awayScore) winner = 'home';
     else if (awayScore > homeScore) winner = 'away';
+    // Scores equal but ESPN marks a winner → game decided on penalties
+    else if (home.winner === true) winner = 'home';
+    else if (away.winner === true) winner = 'away';
     else winner = 'draw';
   }
 
