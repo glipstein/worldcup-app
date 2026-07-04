@@ -3,6 +3,7 @@ import { DRAFT_CONFIG, DRAFTER_BY_ABBR } from '../config/draft';
 import { getStrength, TEAM_STRENGTH } from './teamStrength';
 import { MATCH_ODDS, MARKET_STRENGTH } from './matchOdds';
 import { calculateDrafterTotals } from './scoring';
+import { BRACKET_ORDER } from './bracketOrder';
 
 // ─── Strength resolver ───────────────────────────────────────────────────────
 
@@ -289,6 +290,8 @@ function runOnceFull(
   if (bracketIsReal) {
     // ── Knockout stage: simulate directly from ESPN schedule ────────────────
     let champion: string | null = null;
+    const winnerOf = new Map<string, string>(); // eventId → winning abbr
+
     for (const m of allMatches) {
       if (!m.homeAbbr || !m.awayAbbr) continue;
 
@@ -302,13 +305,68 @@ function runOnceFull(
         if (id) poolPts[id] += fastMatchPts(abbr, m.homeAbbr, outcome, m.stage);
       }
 
-      // The FINAL's winner is the tournament champion. (Early in the knockout
-      // rounds ESPN may still list placeholder teams for the FINAL, in which
-      // case champion stays whatever the latest resolved final showed / null.)
       if (m.stage === 'FINAL' && outcome !== 'draw') {
         champion = outcome === 'home' ? m.homeAbbr : m.awayAbbr;
       }
+
+      if (m.stage !== 'GROUP' && outcome !== 'draw') {
+        winnerOf.set(m.id, outcome === 'home' ? m.homeAbbr : m.awayAbbr);
+      }
     }
+
+    // QF/SF/Final still have ESPN placeholder abbreviations (digits) while the
+    // prior round is in progress, filtering them out of allMatches.  If champion
+    // is still null, build the remaining bracket from R16 winners and simulate
+    // forward through QF → SF → Final, using real ESPN results where available.
+    if (!champion) {
+      const r16Ids = BRACKET_ORDER.ROUND_OF_16   ?? [];
+      const qfIds  = BRACKET_ORDER.QUARTER_FINAL ?? [];
+      const sfIds  = BRACKET_ORDER.SEMI_FINAL    ?? [];
+      const r16 = r16Ids.map(id => winnerOf.get(id));
+
+      if (r16.every(w => !!w)) {
+        // QF: use known ESPN result if available, else simulate from R16 winners
+        const qf: string[] = [];
+        for (let i = 0; i < 4; i++) {
+          const known = winnerOf.get(qfIds[i] ?? '');
+          if (known) {
+            qf.push(known);
+          } else {
+            const home = r16[2 * i]!, away = r16[2 * i + 1]!;
+            const outcome = simulateOutcome(home, away, 'QUARTER_FINAL');
+            const winner = outcome === 'home' ? home : away;
+            const wId = byAbbr.get(winner);
+            if (wId) poolPts[wId] += STAGE_PTS.QUARTER_FINAL.win;
+            qf.push(winner);
+          }
+        }
+
+        // SF: use known ESPN result if available, else simulate from QF winners
+        const sf: string[] = [];
+        for (let i = 0; i < 2; i++) {
+          const known = winnerOf.get(sfIds[i] ?? '');
+          if (known) {
+            sf.push(known);
+          } else {
+            const home = qf[2 * i], away = qf[2 * i + 1];
+            const outcome = simulateOutcome(home, away, 'SEMI_FINAL');
+            const winner = outcome === 'home' ? home : away;
+            const wId = byAbbr.get(winner);
+            if (wId) poolPts[wId] += STAGE_PTS.SEMI_FINAL.win;
+            sf.push(winner);
+          }
+        }
+
+        // Final: always simulate (champion === null means Final not yet in allMatches)
+        if (sf.length === 2) {
+          const outcome = simulateOutcome(sf[0], sf[1], 'FINAL');
+          champion = outcome === 'home' ? sf[0] : sf[1];
+          const wId = byAbbr.get(champion);
+          if (wId) poolPts[wId] += STAGE_PTS.FINAL.win;
+        }
+      }
+    }
+
     return { poolPts, champion };
   }
 
@@ -391,11 +449,21 @@ export function runSingleSim(
   const pending  = allMatches.filter(m => m.status !== 'finished');
 
   if (knockoutBracketIsReal(allMatches)) {
-    // ── Knockout stage: simulate pending ESPN matches directly ───────────────
+    // ── Knockout stage: simulate pending ESPN matches + extend bracket ───────
+    const winnerOf = new Map<string, string>();
+
+    for (const m of finished) {
+      if (m.stage === 'GROUP' || !m.winner || m.winner === 'draw') continue;
+      winnerOf.set(m.id, m.winner === 'home' ? m.homeAbbr : m.awayAbbr);
+    }
+
     const simulated: Match[] = pending
       .filter(m => m.homeAbbr && m.awayAbbr)
       .map(m => {
         const outcome = simulateOutcome(m.homeAbbr, m.awayAbbr, m.stage);
+        if (m.stage !== 'GROUP' && outcome !== 'draw') {
+          winnerOf.set(m.id, outcome === 'home' ? m.homeAbbr : m.awayAbbr);
+        }
         return {
           ...m,
           status: 'finished' as const,
@@ -404,7 +472,80 @@ export function runSingleSim(
           awayScore: outcome === 'away' ? 1 : 0,
         };
       });
-    return calculateDrafterTotals([...finished, ...simulated], config);
+
+    // Build synthetic bracket matches for rounds not yet in ESPN data
+    const r16Ids = BRACKET_ORDER.ROUND_OF_16   ?? [];
+    const qfIds  = BRACKET_ORDER.QUARTER_FINAL ?? [];
+    const sfIds  = BRACKET_ORDER.SEMI_FINAL    ?? [];
+    const r16 = r16Ids.map(id => winnerOf.get(id));
+    const bracketMatches: Match[] = [];
+    let simIdx = 0;
+
+    if (r16.every(w => !!w)) {
+      const r16w = r16 as string[];
+
+      const qf: string[] = [];
+      for (let i = 0; i < 4; i++) {
+        const known = winnerOf.get(qfIds[i] ?? '');
+        if (known) {
+          qf.push(known);
+        } else {
+          const home = r16w[2 * i], away = r16w[2 * i + 1];
+          const outcome = simulateOutcome(home, away, 'QUARTER_FINAL');
+          qf.push(outcome === 'home' ? home : away);
+          bracketMatches.push({
+            id: `sim-ko-${simIdx++}`,
+            date: '2026-07-09T00:00:00Z',
+            stage: 'QUARTER_FINAL',
+            homeAbbr: home, awayAbbr: away,
+            homeScore: outcome === 'home' ? 1 : 0,
+            awayScore: outcome === 'away' ? 1 : 0,
+            status: 'finished', winner: outcome,
+          });
+        }
+      }
+
+      const sf: string[] = [];
+      for (let i = 0; i < 2; i++) {
+        const known = winnerOf.get(sfIds[i] ?? '');
+        if (known) {
+          sf.push(known);
+        } else {
+          const home = qf[2 * i], away = qf[2 * i + 1];
+          const outcome = simulateOutcome(home, away, 'SEMI_FINAL');
+          sf.push(outcome === 'home' ? home : away);
+          bracketMatches.push({
+            id: `sim-ko-${simIdx++}`,
+            date: '2026-07-14T00:00:00Z',
+            stage: 'SEMI_FINAL',
+            homeAbbr: home, awayAbbr: away,
+            homeScore: outcome === 'home' ? 1 : 0,
+            awayScore: outcome === 'away' ? 1 : 0,
+            status: 'finished', winner: outcome,
+          });
+        }
+      }
+
+      // Only add a synthetic Final if it isn't already in allMatches with real teams
+      const finalIsReal = allMatches.some(
+        m => m.stage === 'FINAL' && m.homeAbbr && !/\d/.test(m.homeAbbr)
+      );
+      if (!finalIsReal && sf.length === 2) {
+        const home = sf[0], away = sf[1];
+        const outcome = simulateOutcome(home, away, 'FINAL');
+        bracketMatches.push({
+          id: `sim-ko-${simIdx++}`,
+          date: '2026-07-19T00:00:00Z',
+          stage: 'FINAL',
+          homeAbbr: home, awayAbbr: away,
+          homeScore: outcome === 'home' ? 1 : 0,
+          awayScore: outcome === 'away' ? 1 : 0,
+          status: 'finished', winner: outcome,
+        });
+      }
+    }
+
+    return calculateDrafterTotals([...finished, ...simulated, ...bracketMatches], config);
   }
 
   // ── Group stage: simulate groups + build bracket Match objects ─────────────
