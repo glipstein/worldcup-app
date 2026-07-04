@@ -1127,46 +1127,6 @@
       }
     },
     {
-      "date": "2026-06-30",
-      "drafters": {
-        "pederson": 0.5409,
-        "barber": 0.0128,
-        "lipstein": 0.1547,
-        "martin": 0.2916
-      },
-      "teams": {}
-    },
-    {
-      "date": "2026-07-01",
-      "drafters": {
-        "pederson": 0.3509,
-        "barber": 0.2687,
-        "lipstein": 0.2661,
-        "martin": 0.1144
-      },
-      "teams": {}
-    },
-    {
-      "date": "2026-07-02",
-      "drafters": {
-        "pederson": 0.2245,
-        "barber": 0.4139,
-        "lipstein": 0.1308,
-        "martin": 0.2308
-      },
-      "teams": {}
-    },
-    {
-      "date": "2026-07-03",
-      "drafters": {
-        "pederson": 0.2402,
-        "barber": 0.173,
-        "lipstein": 0.0961,
-        "martin": 0.4908
-      },
-      "teams": {}
-    },
-    {
       "date": "2026-07-04",
       "drafters": {
         "pederson": 0.0941,
