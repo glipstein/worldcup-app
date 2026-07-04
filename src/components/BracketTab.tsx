@@ -3,6 +3,7 @@ import type { Match, Stage } from '../lib/types';
 import { DRAFTER_BY_ABBR, DRAFTER_BY_ID } from '../config/draft';
 import type { DrafterConfig } from '../config/draft';
 import Flag from './Flag';
+import { BRACKET_ORDER } from '../lib/bracketOrder';
 
 interface Props {
   matches: Match[];
@@ -168,33 +169,6 @@ const STAGE_MATCH_COUNT: Partial<Record<Stage, number>> = {
   THIRD_PLACE:   1,
 };
 
-// ESPN event IDs in correct bracket display order (top → bottom).
-// Derived from the ESPN WC 2026 bracket structure (FIFA draw seeding).
-// Pairs that are adjacent feed into the same match in the next round.
-const BRACKET_ORDER: Partial<Record<Stage, string[]>> = {
-  ROUND_OF_32: [
-    // SF101 half → QF97 (via R16-M89 + R16-M90)
-    '760489', '760492',  // GER/3RD + 1I/3RD  → R16-M89
-    '760486', '760488',  // RSA-CAN + NED-MAR  → R16-M90
-    // SF101 half → QF98 (via R16-M91 + R16-M92)
-    '760487', '760490',  // BRA-JPN + CIV/2I  → R16-M91
-    '760491', '760495',  // MEX/3RD + 1L/3RD  → R16-M92
-    // SF102 half → QF99 (via R16-M93 + R16-M94)
-    '760496', '760497',  // 2K/2L + 1H/2J     → R16-M93
-    '760494', '760493',  // USA-BIH + 1G/3RD  → R16-M94
-    // SF102 half → QF100 (via R16-M95 + R16-M96)
-    '760500', '760499',  // ARG/2H + AUS/2G   → R16-M95
-    '760498', '760501',  // SUI/3RD + 1K/3RD  → R16-M96
-  ],
-  ROUND_OF_16: [
-    '760503', '760502',  // R16-M89 (PAR/FRA) + R16-M90 (CAN/MAR) → QF97 → SF101
-    '760504', '760505',  // R16-M91 (BRA/NOR) + R16-M92 (MEX/ENG) → QF98 → SF101
-    '760506', '760507',  // R16-M93 (POR/ESP) + R16-M94 (USA/BEL) → QF99 → SF102
-    '760508', '760509',  // R16-M95 (ARG/EGY) + R16-M96 (SUI/COL) → QF100 → SF102
-  ],
-  QUARTER_FINAL: ['760510', '760511', '760512', '760513'],
-  SEMI_FINAL:    ['760514', '760515'],
-};
 
 interface TeamSlotProps {
   abbr: string;
