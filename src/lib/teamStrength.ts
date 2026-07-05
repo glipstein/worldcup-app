@@ -9,49 +9,49 @@
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 100,  // Argentina — defending champions
-  FRA: 94,  // France
-  ENG: 80,  // England
-  BRA: 80,  // Brazil
-  ESP: 99,  // Spain
+  FRA: 95,  // France
+  ENG: 82,  // England
+  BRA: 84,  // Brazil
+  ESP: 100,  // Spain
   GER: 68,  // Germany
-  POR: 78,  // Portugal
+  POR: 82,  // Portugal
   NED: 74,  // Netherlands
   MAR: 74,  // Morocco
-  BEL: 60,  // Belgium
+  BEL: 64,  // Belgium
   URU: 58,  // Uruguay
-  USA: 47,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
-  COL: 79,  // Colombia
-  JPN: 68,  // Japan
-  CRO: 67,  // Croatia
-  SUI: 64,  // Switzerland
-  SEN: 55,  // Senegal
-  MEX: 74,  // Mexico (host nation boost included)
-  ECU: 68,  // Ecuador
-  NOR: 65,  // Norway
+  USA: 49,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
+  COL: 80,  // Colombia
+  JPN: 64,  // Japan
+  CRO: 63,  // Croatia
+  SUI: 68,  // Switzerland
+  SEN: 50,  // Senegal
+  MEX: 77,  // Mexico (host nation boost included)
+  ECU: 65,  // Ecuador
+  NOR: 68,  // Norway
 
   // ── Picks 21–48 ──────────────────────────────────────────────────────────────
-  CIV: 49,  // Ivory Coast
+  CIV: 45,  // Ivory Coast
   TUR: 62,  // Turkey
-  AUT: 54,  // Austria
-  CAN: 46,  // Canada (host nation boost included)
+  AUT: 52,  // Austria
+  CAN: 49,  // Canada (host nation boost included)
   KOR: 47,  // South Korea
-  SWE: 42,  // Sweden
+  SWE: 40,  // Sweden
   CZE: 34,  // Czechia
-  EGY: 48,  // Egypt
+  EGY: 49,  // Egypt
   SCO: 44,  // Scotland
   PAR: 60,  // Paraguay
-  AUS: 57,  // Australia
-  ALG: 56,  // Algeria
-  GHA: 25,  // Ghana
-  BIH: 24,  // Bosnia & Herzegovina
+  AUS: 56,  // Australia
+  ALG: 52,  // Algeria
+  GHA: 24,  // Ghana
+  BIH: 22,  // Bosnia & Herzegovina
   IRN: 53,  // Iran
   TUN: 25,  // Tunisia
-  COD: 41,  // DR Congo
+  COD: 39,  // DR Congo
   KSA: 30,  // Saudi Arabia (ESPN abbr KSA; SAU alias kept below)
   UZB: 35,  // Uzbekistan
-  RSA: 29,  // South Africa
+  RSA: 25,  // South Africa
   PAN: 38,  // Panama
-  CPV: 29,  // Cape Verde
+  CPV: 28,  // Cape Verde
   JOR: 30,  // Jordan
   IRQ: 29,  // Iraq
   NZL: 24,  // New Zealand
