@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-05T18:59:34.884Z
+// Last fetched: 2026-07-06T02:01:58.072Z
 // Match markets: 53 / 100
-// Strength calibrations: 14 teams
+// Strength calibrations: 13 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 53 markets fetched on 2026-07-05T18:59:34.884Z.
+ * 53 markets fetched on 2026-07-06T02:01:58.072Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -38,7 +38,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   BIH_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BRA_JPN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   BRA_MAR: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  BRA_NOR: { pHome: 0.5423, pDraw: 0.2637, pAway: 0.1940 },
+  BRA_NOR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   CAN_BIH: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   CAN_MAR: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   CAN_QAT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -86,25 +86,24 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 14 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 13 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 95,
+  ARG: 96,
   ESP: 89,
-  ENG: 77,
-  BRA: 76,
-  POR: 73,
-  MEX: 60,
+  ENG: 86,
+  POR: 72,
+  NOR: 68,
+  USA: 60,
   COL: 58,
-  USA: 57,
-  MAR: 54,
-  NOR: 47,
+  MAR: 55,
+  MEX: 52,
   BEL: 39,
-  SUI: 31,
+  SUI: 33,
   EGY: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-05T18:59:34.884Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-06T02:01:58.072Z';
