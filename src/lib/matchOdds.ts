@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-06T02:01:58.072Z
-// Match markets: 53 / 100
-// Strength calibrations: 13 teams
+// Last fetched: 2026-07-06T09:53:13.940Z
+// Match markets: 53 / 101
+// Strength calibrations: 12 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 53 markets fetched on 2026-07-06T02:01:58.072Z.
+ * 53 markets fetched on 2026-07-06T09:53:13.940Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -74,7 +74,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   SEN_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   SUI_BIH: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   SUI_CAN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  SUI_COL: { pHome: 0.2637, pDraw: 0.3134, pAway: 0.4229 },
+  SUI_COL: { pHome: 0.2736, pDraw: 0.3134, pAway: 0.4129 },
   TUN_JPN: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   TUN_NED: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   URU_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -86,24 +86,23 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 13 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 12 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 96,
-  ESP: 89,
-  ENG: 86,
-  POR: 72,
+  ARG: 95,
+  ENG: 91,
+  ESP: 90,
+  POR: 73,
   NOR: 68,
-  USA: 60,
-  COL: 58,
+  COL: 59,
+  USA: 58,
   MAR: 55,
-  MEX: 52,
-  BEL: 39,
+  BEL: 41,
   SUI: 33,
   EGY: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-06T02:01:58.072Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-06T09:53:13.940Z';
