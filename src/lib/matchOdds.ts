@@ -10,8 +10,8 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-07T09:21:35.408Z
-// Match markets: 54 / 102
+// Last fetched: 2026-07-07T14:04:08.469Z
+// Match markets: 55 / 102
 // Strength calibrations: 10 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -23,12 +23,12 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 54 markets fetched on 2026-07-07T09:21:35.408Z.
+ * 55 markets fetched on 2026-07-07T14:04:08.469Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ARG_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  ARG_EGY: { pHome: 0.7214, pDraw: 0.1940, pAway: 0.0846 },
+  ARG_EGY: { pHome: 0.7313, pDraw: 0.1940, pAway: 0.0746 },
   AUS_EGY: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   AUS_TUR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   AUT_JOR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -48,6 +48,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ECU_GER: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ENG_GHA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
+  ESP_BEL: { pHome: 0.5961, pDraw: 0.2414, pAway: 0.1626 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -64,7 +65,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  NOR_ENG: { pHome: 0.2315, pDraw: 0.2611, pAway: 0.5074 },
+  NOR_ENG: { pHome: 0.2239, pDraw: 0.2637, pAway: 0.5124 },
   NOR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAN_ENG: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -92,16 +93,16 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 98,
-  ESP: 97,
-  ENG: 92,
+  ESP: 98,
+  ARG: 97,
+  ENG: 93,
   NOR: 72,
   COL: 60,
-  MAR: 56,
+  MAR: 57,
   BEL: 52,
   SUI: 33,
   EGY: 10,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-07T09:21:35.408Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-07T14:04:08.469Z';
