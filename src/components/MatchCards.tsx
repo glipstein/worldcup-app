@@ -18,6 +18,9 @@ interface MatchCardProps {
   byId: Map<string, DrafterConfig>;
 }
 
+// ESPN uses abbreviations with digits (e.g. "SFW1") for unresolved bracket slots.
+const isTBD = (abbr: string) => /\d/.test(abbr);
+
 function MatchCard({ match, byAbbr, byId }: MatchCardProps) {
   const homeDrafter = byId.get(byAbbr.get(match.homeAbbr) ?? '');
   const awayDrafter = byId.get(byAbbr.get(match.awayAbbr) ?? '');
@@ -68,9 +71,12 @@ function MatchCard({ match, byAbbr, byId }: MatchCardProps) {
       <div className="flex items-center gap-1">
         {/* Home */}
         <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-          <Flag espnAbbr={match.homeAbbr} size="md" />
+          {isTBD(match.homeAbbr)
+            ? <span className="inline-flex items-center justify-center bg-slate-700 text-slate-500 text-[10px] font-bold rounded-sm" style={{ width: 28, height: 21 }}>?</span>
+            : <Flag espnAbbr={match.homeAbbr} size="md" />
+          }
           <span className="text-[11px] text-slate-300 font-medium text-center leading-tight truncate w-full text-center">
-            {match.homeAbbr}
+            {isTBD(match.homeAbbr) ? 'TBD' : match.homeAbbr}
           </span>
           {homeDrafter ? (
             <span
@@ -99,9 +105,12 @@ function MatchCard({ match, byAbbr, byId }: MatchCardProps) {
 
         {/* Away */}
         <div className="flex flex-col items-center gap-1 flex-1 min-w-0">
-          <Flag espnAbbr={match.awayAbbr} size="md" />
+          {isTBD(match.awayAbbr)
+            ? <span className="inline-flex items-center justify-center bg-slate-700 text-slate-500 text-[10px] font-bold rounded-sm" style={{ width: 28, height: 21 }}>?</span>
+            : <Flag espnAbbr={match.awayAbbr} size="md" />
+          }
           <span className="text-[11px] text-slate-300 font-medium text-center leading-tight truncate w-full text-center">
-            {match.awayAbbr}
+            {isTBD(match.awayAbbr) ? 'TBD' : match.awayAbbr}
           </span>
           {awayDrafter ? (
             <span

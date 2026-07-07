@@ -294,6 +294,8 @@ function runOnceFull(
 
     for (const m of allMatches) {
       if (!m.homeAbbr || !m.awayAbbr) continue;
+      // Skip ESPN bracket placeholders (e.g. "SFW1") — digits in abbr = not yet resolved
+      if (/\d/.test(m.homeAbbr) || /\d/.test(m.awayAbbr)) continue;
 
       const outcome =
         m.status === 'finished' && m.winner
@@ -454,11 +456,12 @@ export function runSingleSim(
 
     for (const m of finished) {
       if (m.stage === 'GROUP' || !m.winner || m.winner === 'draw') continue;
+      if (/\d/.test(m.homeAbbr) || /\d/.test(m.awayAbbr)) continue;
       winnerOf.set(m.id, m.winner === 'home' ? m.homeAbbr : m.awayAbbr);
     }
 
     const simulated: Match[] = pending
-      .filter(m => m.homeAbbr && m.awayAbbr)
+      .filter(m => m.homeAbbr && m.awayAbbr && !/\d/.test(m.homeAbbr) && !/\d/.test(m.awayAbbr))
       .map(m => {
         const outcome = simulateOutcome(m.homeAbbr, m.awayAbbr, m.stage);
         if (m.stage !== 'GROUP' && outcome !== 'draw') {
