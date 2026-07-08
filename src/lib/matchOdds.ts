@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-08T08:06:15.074Z
+// Last fetched: 2026-07-08T13:28:21.578Z
 // Match markets: 55 / 103
 // Strength calibrations: 8 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 55 markets fetched on 2026-07-08T08:06:15.074Z.
+ * 55 markets fetched on 2026-07-08T13:28:21.578Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -94,13 +94,13 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
   ARG: 98,
-  ESP: 97,
+  ESP: 98,
   ENG: 94,
   NOR: 73,
   MAR: 58,
-  BEL: 53,
-  SUI: 52,
+  BEL: 54,
+  SUI: 51,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-08T08:06:15.074Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-08T13:28:21.578Z';
