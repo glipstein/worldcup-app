@@ -9,37 +9,37 @@
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 100,  // Argentina — defending champions
-  FRA: 95,  // France
-  ENG: 82,  // England
-  BRA: 84,  // Brazil
+  FRA: 97,  // France
+  ENG: 88,  // England
+  BRA: 78,  // Brazil
   ESP: 100,  // Spain
   GER: 68,  // Germany
-  POR: 82,  // Portugal
+  POR: 79,  // Portugal
   NED: 74,  // Netherlands
-  MAR: 74,  // Morocco
-  BEL: 64,  // Belgium
+  MAR: 77,  // Morocco
+  BEL: 69,  // Belgium
   URU: 58,  // Uruguay
-  USA: 49,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
-  COL: 80,  // Colombia
+  USA: 44,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
+  COL: 79,  // Colombia
   JPN: 64,  // Japan
   CRO: 63,  // Croatia
-  SUI: 68,  // Switzerland
+  SUI: 69,  // Switzerland
   SEN: 50,  // Senegal
-  MEX: 77,  // Mexico (host nation boost included)
+  MEX: 71,  // Mexico (host nation boost included)
   ECU: 65,  // Ecuador
-  NOR: 68,  // Norway
+  NOR: 75,  // Norway
 
   // ── Picks 21–48 ──────────────────────────────────────────────────────────────
   CIV: 45,  // Ivory Coast
   TUR: 62,  // Turkey
   AUT: 52,  // Austria
-  CAN: 49,  // Canada (host nation boost included)
+  CAN: 46,  // Canada (host nation boost included)
   KOR: 47,  // South Korea
   SWE: 40,  // Sweden
   CZE: 34,  // Czechia
-  EGY: 49,  // Egypt
+  EGY: 47,  // Egypt
   SCO: 44,  // Scotland
-  PAR: 60,  // Paraguay
+  PAR: 58,  // Paraguay
   AUS: 56,  // Australia
   ALG: 52,  // Algeria
   GHA: 24,  // Ghana
