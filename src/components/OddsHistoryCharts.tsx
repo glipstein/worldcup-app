@@ -41,11 +41,15 @@ for (const d of DRAFT_CONFIG) {
   for (const t of d.teams) TEAM_META[t.espnAbbr] = { name: t.name, flag: t.flag };
 }
 
-function fmtDate(iso: string): string {
-  // "2026-06-10" → "Jun 10"  (parse as UTC to avoid TZ drift)
+// "2026-06-10" → UTC midnight timestamp (ms). Used as numeric XAxis value so
+// recharts spaces points by actual calendar distance, not equal categorical slots.
+function dateToTs(iso: string): number {
   const [y, m, day] = iso.split('-').map(Number);
-  const d = new Date(Date.UTC(y, m - 1, day));
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  return Date.UTC(y, m - 1, day);
+}
+
+function fmtTs(ts: number): string {
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 function ChartTooltip({ active, payload, label }: any) {
@@ -53,7 +57,7 @@ function ChartTooltip({ active, payload, label }: any) {
   const rows = [...payload].sort((a, b) => b.value - a.value);
   return (
     <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 shadow-xl text-xs">
-      <div className="text-slate-400 font-semibold mb-1">{fmtDate(label)}</div>
+      <div className="text-slate-400 font-semibold mb-1">{fmtTs(label)}</div>
       {rows.map((r: any) => (
         <div key={r.dataKey} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ background: r.color }} />
@@ -77,9 +81,10 @@ export default function OddsHistoryCharts() {
     );
   }
 
-  // ── Drafter rows: [{ date, pederson: 31.4, barber: ... }] (as percentages) ──
+  // ── Drafter rows: [{ ts, pederson: 31.4, barber: ... }] (as percentages) ──
+  // ts is a UTC timestamp so XAxis can space points by real calendar distance.
   const drafterRows = HISTORY.map(h => {
-    const row: Record<string, number | string> = { date: h.date };
+    const row: Record<string, number> = { ts: dateToTs(h.date) };
     for (const d of DRAFT_CONFIG) row[d.id] = (h.drafters[d.id] ?? 0) * 100;
     return row;
   });
@@ -92,7 +97,7 @@ export default function OddsHistoryCharts() {
     .map(([abbr]) => abbr);
 
   const teamRows = HISTORY.map(h => {
-    const row: Record<string, number | string> = { date: h.date };
+    const row: Record<string, number> = { ts: dateToTs(h.date) };
     for (const abbr of topTeams) row[abbr] = (h.teams[abbr] ?? 0) * 100;
     return row;
   });
@@ -119,7 +124,7 @@ export default function OddsHistoryCharts() {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={drafterRows} margin={{ top: 8, right: 16, bottom: 4, left: -8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="date" tickFormatter={fmtDate} {...axisProps} />
+              <XAxis dataKey="ts" type="number" scale="time" domain={['dataMin', 'dataMax']} tickFormatter={fmtTs} minTickGap={40} {...axisProps} />
               <YAxis unit="%" domain={[0, 'auto']} {...axisProps} />
               <Tooltip content={<ChartTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -153,7 +158,7 @@ export default function OddsHistoryCharts() {
           <ResponsiveContainer width="100%" height={340}>
             <LineChart data={teamRows} margin={{ top: 8, right: 16, bottom: 4, left: -8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="date" tickFormatter={fmtDate} {...axisProps} />
+              <XAxis dataKey="ts" type="number" scale="time" domain={['dataMin', 'dataMax']} tickFormatter={fmtTs} minTickGap={40} {...axisProps} />
               <YAxis unit="%" domain={[0, 'auto']} {...axisProps} />
               <Tooltip content={<ChartTooltip />} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
