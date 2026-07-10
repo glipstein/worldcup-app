@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-10T13:54:37.484Z
+// Last fetched: 2026-07-10T19:14:23.369Z
 // Match markets: 55 / 103
 // Strength calibrations: 7 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 55 markets fetched on 2026-07-10T13:54:37.484Z.
+ * 55 markets fetched on 2026-07-10T19:14:23.369Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -48,7 +48,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ECU_GER: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ENG_GHA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  ESP_BEL: { pHome: 0.6000, pDraw: 0.2398, pAway: 0.1602 },
+  ESP_BEL: { pHome: 0.5834, pDraw: 0.2497, pAway: 0.1669 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -65,7 +65,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  NOR_ENG: { pHome: 0.2262, pDraw: 0.2583, pAway: 0.5155 },
+  NOR_ENG: { pHome: 0.2317, pDraw: 0.2590, pAway: 0.5093 },
   NOR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAN_ENG: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -93,13 +93,13 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ARG: 97,
-  ESP: 95,
+  ARG: 98,
+  ESP: 96,
   ENG: 94,
-  NOR: 72,
-  BEL: 51,
+  NOR: 74,
+  BEL: 47,
   SUI: 46,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-10T13:54:37.484Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-10T19:14:23.369Z';
