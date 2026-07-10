@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-09T19:20:05.868Z
+// Last fetched: 2026-07-10T01:48:05.586Z
 // Match markets: 55 / 103
-// Strength calibrations: 8 teams
+// Strength calibrations: 7 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 55 markets fetched on 2026-07-09T19:20:05.868Z.
+ * 55 markets fetched on 2026-07-10T01:48:05.586Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -48,11 +48,11 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ECU_GER: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ENG_GHA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  ESP_BEL: { pHome: 0.5915, pDraw: 0.2428, pAway: 0.1656 },
+  ESP_BEL: { pHome: 0.5911, pDraw: 0.2416, pAway: 0.1673 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  FRA_MAR: { pHome: 0.6115, pDraw: 0.2478, pAway: 0.1407 },
+  FRA_MAR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_SEN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   GER_CIV: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -88,19 +88,18 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 8 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 7 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
   FRA: 100,
-  ESP: 99,
-  ARG: 98,
+  ARG: 97,
+  ESP: 96,
   ENG: 94,
-  NOR: 74,
-  MAR: 59,
-  BEL: 54,
-  SUI: 50,
+  NOR: 72,
+  BEL: 51,
+  SUI: 49,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-09T19:20:05.868Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-10T01:48:05.586Z';
