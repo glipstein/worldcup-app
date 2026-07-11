@@ -10,7 +10,7 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-11T12:52:16.245Z
+// Last fetched: 2026-07-11T18:43:15.321Z
 // Match markets: 56 / 103
 // Strength calibrations: 6 teams
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 56 markets fetched on 2026-07-11T12:52:16.245Z.
+ * 56 markets fetched on 2026-07-11T18:43:15.321Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -51,7 +51,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ESP_BEL: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  FRA_ESP: { pHome: 0.4146, pDraw: 0.2976, pAway: 0.2878 },
+  FRA_ESP: { pHome: 0.4187, pDraw: 0.2906, pAway: 0.2906 },
   FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_MAR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_SEN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -66,7 +66,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   MEX_RSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   NED_JPN: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   NED_SWE: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  NOR_ENG: { pHome: 0.2453, pDraw: 0.2553, pAway: 0.4994 },
+  NOR_ENG: { pHome: 0.2472, pDraw: 0.2522, pAway: 0.5006 },
   NOR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAN_ENG: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   PAR_FRA: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
@@ -95,11 +95,11 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
 export const MARKET_STRENGTH: Record<string, number> = {
   ESP: 100,
   FRA: 100,
-  ARG: 96,
+  ARG: 97,
   ENG: 92,
   NOR: 73,
   SUI: 45,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-11T12:52:16.245Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-11T18:43:15.321Z';
