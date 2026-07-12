@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-12T01:28:34.998Z
+// Last fetched: 2026-07-12T07:57:02.094Z
 // Match markets: 56 / 103
-// Strength calibrations: 6 teams
+// Strength calibrations: 4 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 56 markets fetched on 2026-07-12T01:28:34.998Z.
+ * 56 markets fetched on 2026-07-12T07:57:02.094Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -51,7 +51,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ESP_BEL: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_KSA: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
-  FRA_ESP: { pHome: 0.4187, pDraw: 0.2906, pAway: 0.2906 },
+  FRA_ESP: { pHome: 0.4229, pDraw: 0.2935, pAway: 0.2836 },
   FRA_IRQ: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_MAR: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   FRA_SEN: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -89,17 +89,15 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 6 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 4 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
-  ARG: 100,
+  ENG: 100,
   FRA: 100,
-  ENG: 99,
   ESP: 99,
-  SUI: 28,
-  NOR: 10,
+  ARG: 98,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-12T01:28:34.998Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-12T07:57:02.094Z';
