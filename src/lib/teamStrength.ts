@@ -9,15 +9,15 @@
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 100,  // Argentina — defending champions
-  FRA: 97,  // France
+  FRA: 100,  // France
   ENG: 88,  // England
   BRA: 78,  // Brazil
   ESP: 100,  // Spain
   GER: 68,  // Germany
   POR: 79,  // Portugal
   NED: 74,  // Netherlands
-  MAR: 77,  // Morocco
-  BEL: 69,  // Belgium
+  MAR: 73,  // Morocco
+  BEL: 67,  // Belgium
   URU: 58,  // Uruguay
   USA: 44,  // USA (host nation boost included; Elo base 44 + ~14 home-tournament adjustment)
   COL: 79,  // Colombia
