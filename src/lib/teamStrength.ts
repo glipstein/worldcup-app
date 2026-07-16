@@ -9,7 +9,7 @@
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 100,  // Argentina — defending champions
-  FRA: 100,  // France
+  FRA: 96,  // France
   ENG: 88,  // England
   BRA: 78,  // Brazil
   ESP: 100,  // Spain
@@ -23,11 +23,11 @@ export const TEAM_STRENGTH: Record<string, number> = {
   COL: 79,  // Colombia
   JPN: 64,  // Japan
   CRO: 63,  // Croatia
-  SUI: 69,  // Switzerland
+  SUI: 67,  // Switzerland
   SEN: 50,  // Senegal
   MEX: 71,  // Mexico (host nation boost included)
   ECU: 65,  // Ecuador
-  NOR: 75,  // Norway
+  NOR: 71,  // Norway
 
   // ── Picks 21–48 ──────────────────────────────────────────────────────────────
   CIV: 45,  // Ivory Coast
