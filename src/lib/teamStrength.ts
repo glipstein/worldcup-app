@@ -9,8 +9,8 @@
 export const TEAM_STRENGTH: Record<string, number> = {
   // ── Picks 1–5 ────────────────────────────────────────────────────────────────
   ARG: 100,  // Argentina — defending champions
-  FRA: 96,  // France
-  ENG: 88,  // England
+  FRA: 90,  // France
+  ENG: 94,  // England
   BRA: 78,  // Brazil
   ESP: 100,  // Spain
   GER: 68,  // Germany
