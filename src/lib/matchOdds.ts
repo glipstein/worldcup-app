@@ -10,9 +10,9 @@
 //   Formula:  s = clamp( 50 + 50 × log₁₀(p / (1/48)) , 10, 100 )
 //   Applied to all 48 WC teams. Teams below ~0.26% hit the floor of 10.
 //
-// Last fetched: 2026-07-19T18:47:14.192Z
+// Last fetched: 2026-07-20T01:52:26.922Z
 // Match markets: 59 / 104
-// Strength calibrations: 2 teams
+// Strength calibrations: 1 teams
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface MatchOdds {
@@ -23,7 +23,7 @@ export interface MatchOdds {
 
 /**
  * Polymarket 3-way match odds keyed by "HOMEABBR_AWAYABBR".
- * 59 markets fetched on 2026-07-19T18:47:14.192Z.
+ * 59 markets fetched on 2026-07-20T01:52:26.922Z.
  */
 export const MATCH_ODDS: Record<string, MatchOdds> = {
   ARG_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
@@ -48,7 +48,7 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
   ECU_GER: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ENG_ARG: { pHome: 0.0000, pDraw: 0.0000, pAway: 1.0000 },
   ENG_GHA: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
-  ESP_ARG: { pHome: 0.4197, pDraw: 0.3225, pAway: 0.2578 },
+  ESP_ARG: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
   ESP_AUT: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ESP_BEL: { pHome: 1.0000, pDraw: 0.0000, pAway: 0.0000 },
   ESP_CPV: { pHome: 0.0000, pDraw: 1.0000, pAway: 0.0000 },
@@ -92,13 +92,12 @@ export const MATCH_ODDS: Record<string, MatchOdds> = {
  * winner odds.  Used by simulation.ts as the fallback strength when no
  * match-specific market exists (e.g. hypothetical bracket paths).
  *
- * 2 teams covered. Teams at the floor (10) reflect market odds near zero.
+ * 1 teams covered. Teams at the floor (10) reflect market odds near zero.
  * Sorted strongest-first for readability.
  */
 export const MARKET_STRENGTH: Record<string, number> = {
-  ARG: 100,
   ESP: 100,
 };
 
 /** ISO timestamp of the last successful fetch. */
-export const MATCH_ODDS_FETCHED_AT = '2026-07-19T18:47:14.192Z';
+export const MATCH_ODDS_FETCHED_AT = '2026-07-20T01:52:26.922Z';
